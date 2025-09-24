@@ -60,3 +60,17 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 ## Renovate integration
 
 Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
+
+## Supabase
+
+To create a new SQL migration file.
+
+```sh
+supabase migrations new {file_name}
+```
+
+To create a new Deno Edge Function.
+
+```sh
+supabase functions new {file_name}
+```
