@@ -52,18 +52,6 @@ jobs:
           cache: pnpm
 
       # Build
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install dependencies
-        run: pnpm install
-
       - name: Lint
         run: pnpm run lint
 
