@@ -7,7 +7,8 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Notes
 
-- WIP
+- Remove content and routes you don't plan to use.
+- Remove `nuxt-og-image` module and related usages in app
 
 ## Setup
 
