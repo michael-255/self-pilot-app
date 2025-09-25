@@ -6,7 +6,7 @@ seo:
 navigation: false
 hero:
   links:
-    - label: Get started
+    - label: Get started!!!!!
       icon: i-lucide-arrow-right
       trailing: true
       to: https://ui.nuxt.com/docs/getting-started/installation/nuxt

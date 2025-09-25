@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const { data: page } = await useAsyncData('index', () => queryCollection('index').first())
 
-const title = page.value?.seo?.title || page.value?.title
-const description = page.value?.seo?.description || page.value?.description
+const title = 'Tools and apps for every day'
+const description = ''
 
 useSeoMeta({
   titleTemplate: '',
@@ -11,30 +11,73 @@ useSeoMeta({
   description,
   ogDescription: description
 })
+
+/*
+      color: neutral
+      variant: subtle
+*/
+
+const links = [
+  {
+    label: 'Tools',
+    icon: 'i-lucide-wrench',
+    trailing: true,
+    to: '/docs',
+    size: 'xl' as const,
+    color: 'primary' as const,
+    variant: 'solid' as const
+  },
+  {
+    label: 'Fitness',
+    icon: 'i-lucide-dumbbell',
+    trailing: true,
+    to: '/',
+    size: 'xl' as const,
+    color: 'secondary' as const,
+    variant: 'link' as const
+  },
+  {
+    label: 'Journal',
+    icon: 'i-lucide-book-open',
+    trailing: true,
+    to: '/',
+    size: 'xl' as const,
+    color: 'success' as const,
+    variant: 'ghost' as const
+  },
+  {
+    label: 'Budget',
+    icon: 'i-lucide-dollar-sign',
+    trailing: true,
+    to: '/',
+    size: 'xl' as const,
+    color: 'error' as const,
+    variant: 'outline' as const
+  }
+]
 </script>
 
 <template>
   <div v-if="page">
     <UPageHero
-      :title="page.title"
-      :description="page.description"
-      :links="page.hero.links"
+      :title="title"
+      :description="description"
+      :links="links"
     >
       <template #top>
         <HeroBackground />
+        <LazyStarsBg />
       </template>
 
       <template #title>
         <MDC
-          :value="page.title"
+          :value="title"
           unwrap="p"
         />
       </template>
-
-      <PromotionalVideo />
     </UPageHero>
 
-    <UPageSection
+    <!-- <UPageSection
       v-for="(section, index) in page.sections"
       :key="index"
       :title="section.title"
@@ -58,9 +101,9 @@ useSeoMeta({
           spotlight
         />
       </UPageGrid>
-    </UPageSection>
+    </UPageSection> -->
 
-    <UPageSection
+    <!-- <UPageSection
       id="testimonials"
       :headline="page.testimonials.headline"
       :title="page.testimonials.title"
@@ -82,9 +125,9 @@ useSeoMeta({
           </template>
         </UPageCard>
       </UPageColumns>
-    </UPageSection>
+    </UPageSection> -->
 
-    <USeparator />
+    <!-- <USeparator />
 
     <UPageCTA
       v-bind="page.cta"
@@ -92,6 +135,6 @@ useSeoMeta({
       class="overflow-hidden"
     >
       <LazyStarsBg />
-    </UPageCTA>
+    </UPageCTA> -->
   </div>
 </template>

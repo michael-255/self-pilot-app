@@ -21,9 +21,10 @@ const items = computed(() => [{
   <UHeader>
     <template #left>
       <NuxtLink to="/">
-        <AppLogo class="w-auto h-6 shrink-0" />
+        <div class="text-2xl font-bold">
+          Self Pilot
+        </div>
       </NuxtLink>
-      <TemplateMenu />
     </template>
 
     <UNavigationMenu
@@ -49,14 +50,6 @@ const items = computed(() => [{
         to="/login"
         class="hidden lg:inline-flex"
       />
-
-      <UButton
-        label="Sign up"
-        color="neutral"
-        trailing-icon="i-lucide-arrow-right"
-        class="hidden lg:inline-flex"
-        to="/signup"
-      />
     </template>
 
     <template #body>
@@ -68,6 +61,14 @@ const items = computed(() => [{
 
       <USeparator class="my-6" />
 
+      <UButton
+        label="Settings"
+        color="neutral"
+        variant="subtle"
+        to="/"
+        block
+        class="mb-3"
+      />
       <UButton
         label="Sign in"
         color="neutral"
