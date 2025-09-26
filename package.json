@@ -8,7 +8,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "supabase:env": "npx tsx scripts/local-supabase-env.ts self-pilot-app"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.68",
