@@ -1,20 +1,5 @@
 <script setup lang="ts">
-const route = useRoute()
-
-const items = computed(() => [{
-  label: 'Docs',
-  to: '/docs',
-  active: route.path.startsWith('/docs')
-}, {
-  label: 'Pricing',
-  to: '/pricing'
-}, {
-  label: 'Blog',
-  to: '/blog'
-}, {
-  label: 'Changelog',
-  to: '/changelog'
-}])
+//
 </script>
 
 <template>
@@ -27,24 +12,19 @@ const items = computed(() => [{
       </NuxtLink>
     </template>
 
-    <UNavigationMenu
-      :items="items"
-      variant="link"
-    />
-
     <template #right>
       <UColorModeButton />
 
       <UButton
-        icon="i-lucide-log-in"
+        icon="i-lucide-settings"
         color="neutral"
         variant="ghost"
-        to="/login"
-        class="lg:hidden"
+        to="/settings"
+        class="hidden lg:inline-flex"
       />
 
       <UButton
-        label="Sign in"
+        label="Login"
         color="neutral"
         variant="outline"
         to="/login"
@@ -53,34 +33,28 @@ const items = computed(() => [{
     </template>
 
     <template #body>
-      <UNavigationMenu
-        :items="items"
-        orientation="vertical"
-        class="-mx-2.5"
-      />
-
-      <USeparator class="my-6" />
-
       <UButton
-        label="Settings"
-        color="neutral"
-        variant="subtle"
-        to="/"
-        block
-        class="mb-3"
-      />
-      <UButton
-        label="Sign in"
+        label="Login"
         color="neutral"
         variant="subtle"
         to="/login"
         block
         class="mb-3"
       />
+
       <UButton
-        label="Sign up"
+        label="Settings"
         color="neutral"
-        to="/signup"
+        variant="subtle"
+        to="/settings"
+        block
+        class="mb-3"
+      />
+
+      <UButton
+        label="Exit"
+        color="error"
+        to="/"
         block
       />
     </template>
