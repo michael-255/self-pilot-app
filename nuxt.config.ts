@@ -37,14 +37,6 @@ export default defineNuxtConfig({
 
   nitro: { preset: 'static' },
 
-  eslint: {
-    config: {
-      stylistic: {
-        braceStyle: '1tbs',
-      },
-    },
-  },
-
   ogImage: {
     enabled: false,
   },

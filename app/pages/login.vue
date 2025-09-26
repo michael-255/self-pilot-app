@@ -3,12 +3,12 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 definePageMeta({
-  layout: 'auth'
+  layout: 'auth',
 })
 
 useSeoMeta({
   title: 'Login',
-  description: 'Login to your account to continue'
+  description: 'Login to your account to continue',
 })
 
 const fields = [{
@@ -16,21 +16,21 @@ const fields = [{
   type: 'text' as const,
   label: 'Email',
   placeholder: 'Enter your email',
-  required: true
+  required: true,
 }, {
   name: 'password',
   label: 'Password',
   type: 'password' as const,
-  placeholder: 'Enter your password'
+  placeholder: 'Enter your password',
 }, {
   name: 'remember',
   label: 'Remember me',
-  type: 'checkbox' as const
+  type: 'checkbox' as const,
 }]
 
 const schema = z.object({
   email: z.email('Invalid email'),
-  password: z.string().min(8, 'Must be at least 8 characters')
+  password: z.string().min(8, 'Must be at least 8 characters'),
 })
 
 type Schema = z.output<typeof schema>
@@ -47,6 +47,5 @@ function onSubmit(payload: FormSubmitEvent<Schema>) {
     title="Welcome back"
     icon="i-lucide-user"
     @submit="onSubmit"
-  >
-  </UAuthForm>
+  />
 </template>

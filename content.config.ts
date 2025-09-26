@@ -7,11 +7,11 @@ const orientationEnum = z.enum(['vertical', 'horizontal'])
 
 const createBaseSchema = () => z.object({
   title: z.string().nonempty(),
-  description: z.string().nonempty()
+  description: z.string().nonempty(),
 })
 
 const createFeatureItemSchema = () => createBaseSchema().extend({
-  icon: z.string().nonempty().editor({ input: 'icon' })
+  icon: z.string().nonempty().editor({ input: 'icon' }),
 })
 
 const createLinkSchema = () => z.object({
@@ -22,14 +22,14 @@ const createLinkSchema = () => z.object({
   trailing: z.boolean().optional(),
   target: z.string().optional(),
   color: colorEnum.optional(),
-  variant: variantEnum.optional()
+  variant: variantEnum.optional(),
 })
 
 const createImageSchema = () => z.object({
   src: z.string().nonempty().editor({ input: 'media' }),
   alt: z.string().optional(),
   loading: z.string().optional(),
-  srcset: z.string().optional()
+  srcset: z.string().optional(),
 })
 
 export const collections = {
@@ -38,18 +38,18 @@ export const collections = {
     type: 'page',
     schema: z.object({
       hero: z.object(({
-        links: z.array(createLinkSchema())
+        links: z.array(createLinkSchema()),
       })),
       sections: z.array(
         createBaseSchema().extend({
           id: z.string().nonempty(),
           orientation: orientationEnum.optional(),
           reverse: z.boolean().optional(),
-          features: z.array(createFeatureItemSchema())
-        })
+          features: z.array(createFeatureItemSchema()),
+        }),
       ),
       features: createBaseSchema().extend({
-        items: z.array(createFeatureItemSchema())
+        items: z.array(createFeatureItemSchema()),
       }),
       testimonials: createBaseSchema().extend({
         headline: z.string().optional(),
@@ -61,18 +61,18 @@ export const collections = {
               description: z.string().nonempty(),
               to: z.string().nonempty(),
               target: z.string().nonempty(),
-              avatar: createImageSchema()
-            })
-          })
-        )
+              avatar: createImageSchema(),
+            }),
+          }),
+        ),
       }),
       cta: createBaseSchema().extend({
-        links: z.array(createLinkSchema())
-      })
-    })
+        links: z.array(createLinkSchema()),
+      }),
+    }),
   }),
   docs: defineCollection({
     source: '1.docs/**/*',
-    type: 'page'
-  })
+    type: 'page',
+  }),
 }
