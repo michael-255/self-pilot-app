@@ -1,6 +1,8 @@
 name: GitHub Pages
 
-run-name: GitHub Pages - ${{ github.event.head_commit.message || github.event.pull_request.title || 'Manual' }}
+run-name:
+  GitHub Pages - ${{ github.event.head_commit.message || github.event.pull_request.title || 'Manual'
+  }}
 
 on:
   push:
@@ -62,7 +64,7 @@ jobs:
         run: pnpm run typecheck
 
       - name: Build
-        run: pnpm generate
+        run: pnpm build
 
       - name: GitHub Pages 404 Workaround
         run: cd dist && cp index.html 404.html
@@ -74,7 +76,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: './dist'
 
       - name: Deploy to GitHub Pages
         id: deployment

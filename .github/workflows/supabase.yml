@@ -1,6 +1,7 @@
 name: Supabase
 
-run-name: Supabase - ${{ github.event.head_commit.message || github.event.pull_request.title || 'Manual' }}
+run-name:
+  Supabase - ${{ github.event.head_commit.message || github.event.pull_request.title || 'Manual' }}
 
 on:
   push:
@@ -10,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy_supabase:
     runs-on: ubuntu-latest
 
     permissions:
