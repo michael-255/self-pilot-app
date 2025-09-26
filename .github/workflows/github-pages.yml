@@ -1,8 +1,6 @@
 name: GitHub Pages
 
-run-name:
-  GitHub Pages - ${{ github.event.head_commit.message || github.event.pull_request.title || 'Manual'
-  }}
+run-name: GitHub Pages - ${{ github.event.head_commit.message || 'Running' }}
 
 on:
   push:
@@ -40,7 +38,6 @@ jobs:
       NUXT_PUBLIC_SUPABASE_KEY: ${{ vars.NUXT_PUBLIC_SUPABASE_KEY }}
 
     steps:
-      # Setup
       - name: Checkout
         uses: actions/checkout@v5
 
