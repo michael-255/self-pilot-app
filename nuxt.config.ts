@@ -18,6 +18,8 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
+  app: { baseURL: '/self-pilot-app/' },
+
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
