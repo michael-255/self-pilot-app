@@ -15,8 +15,7 @@ CREATE SCHEMA IF NOT EXISTS seeding;
 CREATE OR REPLACE FUNCTION seeding.create_user(
   in_email TEXT,
   in_password TEXT,
-  in_first_name TEXT,
-  in_last_name TEXT
+  in_name TEXT
 )
 RETURNS UUID
 LANGUAGE plpgsql
@@ -57,7 +56,7 @@ BEGIN
     current_timestamp,
     current_timestamp,
     '{"provider":"email","providers":["email"]}',
-    jsonb_build_object('display_name', in_first_name || ' ' || in_last_name, 'email_verified', true),
+    jsonb_build_object('display_name', in_name, 'email_verified', true),
     current_timestamp,
     current_timestamp,
     '',

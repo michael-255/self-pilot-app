@@ -14,6 +14,7 @@ useSeoMeta({
 const router = useRouter()
 const logger = useLogger()
 const supabase = useSupabaseClient()
+const authStore = useAuthStore()
 const loading = useLoadingIndicator()
 const userEmail = useLocalStorage('user-email', '')
 const randomMessage =
@@ -37,21 +38,21 @@ const authSchema = z.object({
 
 type AuthSchema = z.output<typeof authSchema>
 
-async function onSubmit(payload: FormSubmitEvent<AuthSchema>) {
+const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
   try {
     errorMessage.value = ''
     loading.start()
 
-    const { error: loginError } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: payload.data.email,
       password: payload.data.password!,
     })
 
-    if (loginError) throw new Error(loginError.message)
+    if (error) throw error
 
     userEmail.value = payload.data.email
 
-    logger.debug('Login successful', { email: payload.data.email })
+    logger.info('Login successful', { email: payload.data.email })
     await router.replace('/')
   } catch (e) {
     logger.error('Login failed', e)
@@ -74,12 +75,24 @@ async function onSubmit(payload: FormSubmitEvent<AuthSchema>) {
     <div class="flex flex-col items-center space-y-3">
       <UIcon name="i-lucide-user" class="w-9 h-9" />
 
-      <div class="text-2xl font-bold">Welcome back</div>
+      <div class="text-2xl font-bold">
+        Welcome back
+        <template v-if="authStore.isLoggedIn && !loading.isLoading">
+          {{ ' ' + authStore.user.name }}
+        </template>
+      </div>
 
-      <div class="text-gray-400 text-center">
+      <div v-if="!authStore.isLoggedIn || loading.isLoading" class="text-gray-400 text-center">
         {{ randomMessage }}
       </div>
+
+      <div v-else class="text-gray-400 text-center">
+        You are already logged in.
+        <a href="#" class="text-primary" @click.prevent="authStore.onLogout('/login')"> Logout? </a>
+      </div>
     </div>
+
+    <USeparator />
 
     <UFormField label="Email" name="email">
       <UInput v-model="state.email" class="w-full" :disabled="loading.isLoading.value" />
@@ -115,7 +128,6 @@ async function onSubmit(payload: FormSubmitEvent<AuthSchema>) {
       color="primary"
       variant="solid"
       :loading="loading.isLoading.value"
-      @submit.prevent="onSubmit"
     >
       Login
     </UButton>

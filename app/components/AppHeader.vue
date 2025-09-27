@@ -1,5 +1,5 @@
 <script setup lang="ts">
-//
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -22,27 +22,30 @@
       />
 
       <UButton
-        label="Login"
-        color="neutral"
-        variant="outline"
-        to="/login"
+        v-if="authStore.isLoggedIn"
+        label="Logout"
+        icon="i-lucide-log-out"
+        color="error"
+        variant="soft"
         class="hidden lg:inline-flex"
+        @click="authStore.onLogout()"
+      />
+
+      <UButton
+        v-else
+        label="Sign In"
+        icon="i-lucide-log-in"
+        variant="soft"
+        class="hidden lg:inline-flex"
+        to="/login"
       />
     </template>
 
     <template #body>
-      <UButton label="Login" color="neutral" variant="subtle" to="/login" block class="mb-3" />
-
-      <UButton
-        label="Settings"
-        color="neutral"
-        variant="subtle"
-        to="/settings"
-        block
-        class="mb-3"
-      />
-
-      <UButton label="Exit" color="error" to="/" block />
+      <div class="space-y-4">
+        <UButton label="Settings" color="neutral" variant="subtle" to="/settings" block />
+        <UButton label="Logout" color="error" block @click="authStore.onLogout()" />
+      </div>
     </template>
   </UHeader>
 </template>

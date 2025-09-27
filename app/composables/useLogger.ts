@@ -1,5 +1,5 @@
 /**
- * Logger for the Vue application frontend code.
+ * Composable for logging messages to local storage on the client.
  */
 export default function useLogger() {
   const toast = useToast()

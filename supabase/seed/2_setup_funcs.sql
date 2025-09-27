@@ -8,9 +8,11 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
-  x_user_id UUID;
+  a_user_id UUID,
+  b_user_id UUID;
 BEGIN
-  x_user_id := seeding.create_user('a@a.com', 'testuser123', 'Test', 'User');
+  a_user_id := seeding.create_user('a@a.com', 'testuser123', 'Tester-A');
+  b_user_id := seeding.create_user('b@b,com', 'testuser123', 'Tester-B');
   -- TODO: Add more seeding logic here
 END;
 $$;
