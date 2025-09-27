@@ -5,10 +5,13 @@ A collection of tools and mini-apps for day-to-day life.
 - [Nuxt](https://nuxt.com/docs/4.x/)
 - [Nuxt UI](https://ui.nuxt.com/)
 
-## Notes
+## Next Steps
 
+- Build custom auth page (Login)
+- Based on Auth status have the following:
+  - Indicator with Name and email
+  - Logout button
 - Remove content and routes you don't plan to use
-- Fix type and lint errors so pages GHA will work
 - Remove `nuxt-og-image` module and related usages in app
 
 ## Setup

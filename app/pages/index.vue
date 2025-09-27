@@ -15,7 +15,8 @@ useSeoMeta({
 const features = [
   {
     title: 'Tools',
-    description: 'A collection of useful tools to help you manage your daily tasks and improve productivity.',
+    description:
+      'A collection of useful tools to help you manage your daily tasks and improve productivity.',
     icon: 'i-lucide-wrench',
     to: '/tools',
   },
@@ -27,7 +28,8 @@ const features = [
   },
   {
     title: 'Journal',
-    description: 'Capture your thoughts, ideas, and daily reflections in a secure and private journal.',
+    description:
+      'Capture your thoughts, ideas, and daily reflections in a secure and private journal.',
     icon: 'i-lucide-book-open',
     to: '/journal',
   },
@@ -44,6 +46,12 @@ const features = [
     to: '/measurements',
   },
 ]
+
+const logger = useLogger()
+logger.debug('DEBUG message from index page')
+logger.info('INFO message from index page')
+logger.warn('WARN message from index page')
+logger.error('ERROR message from index page')
 </script>
 
 <template>

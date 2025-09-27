@@ -14,9 +14,9 @@ export class AppLog {
   created_at: string
   log_level: LogLevel
   label: string
-  details?: Record<string, any>
+  details?: any
 
-  constructor(logLevel: LogLevel, label: string, details?: Record<string, any> | Error) {
+  constructor(logLevel: LogLevel, label: string, details?: any) {
     this.created_at = new Date().toISOString()
     this.log_level = logLevel
     this.label = label
@@ -27,8 +27,10 @@ export class AppLog {
         message: details.message,
         stack: details.stack,
       }
-    } else {
+    } else if (details && typeof details === 'object') {
       this.details = details
+    } else {
+      this.details = { value: details }
     }
   }
 }

@@ -51,13 +51,13 @@ BEGIN
     extensions.gen_random_uuid(),
     'authenticated',
     'authenticated',
-    input_email,
-    extensions.crypt(input_password, extensions.gen_salt('bf')),
+    in_email,
+    extensions.crypt(in_password, extensions.gen_salt('bf')),
     current_timestamp,
     current_timestamp,
     current_timestamp,
     '{"provider":"email","providers":["email"]}',
-    jsonb_build_object('display_name', input_first_name || ' ' || input_last_name, 'email_verified', true),
+    jsonb_build_object('display_name', in_first_name || ' ' || in_last_name, 'email_verified', true),
     current_timestamp,
     current_timestamp,
     '',
@@ -82,11 +82,13 @@ BEGIN
     extensions.gen_random_uuid(),
     new_user_id,
     new_user_id,
-    format('{"sub":"%s","email":"%s"}', new_user_id::text, input_email)::jsonb,
+    format('{"sub":"%s","email":"%s"}', new_user_id::text, in_email)::jsonb,
     'email',
     current_timestamp,
     current_timestamp,
     current_timestamp
   );
+
+  RETURN new_user_id;
 END;
 $$;
