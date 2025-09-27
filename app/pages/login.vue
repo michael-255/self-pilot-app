@@ -20,7 +20,7 @@ const userEmail = useLocalStorage('user-email', '')
 const randomMessage =
   inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]
 const showPassword = ref(false)
-const state = reactive({
+const form = reactive({
   email: userEmail.value,
   password: '',
 })
@@ -40,8 +40,8 @@ type AuthSchema = z.output<typeof authSchema>
 
 const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
   try {
+    loading.start({ force: true })
     errorMessage.value = ''
-    loading.start()
 
     const { error } = await supabase.auth.signInWithPassword({
       email: payload.data.email,
@@ -63,34 +63,31 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
       errorMessage.value = 'Login failed. Please try again.'
     }
 
-    state.password = ''
+    form.password = ''
   } finally {
-    loading.finish()
+    loading.finish({ force: true })
   }
 }
 </script>
 
 <template>
-  <UForm :schema="authSchema" :state="state" class="space-y-6" @submit="onSubmit">
+  <UForm :schema="authSchema" :state="form" class="space-y-6" @submit="onSubmit">
     <div class="flex flex-col items-center space-y-3">
       <UIcon name="i-lucide-user" class="w-9 h-9" />
 
       <div class="text-2xl font-bold">
         Welcome back
-        <template v-if="authStore.isLoggedIn && !loading.isLoading.value">
+        <template v-if="authStore.isLoggedIn && !loading.isLoading">
           {{ ' ' + authStore.user.name }}
         </template>
       </div>
 
-      <div
-        v-if="!authStore.isLoggedIn || loading.isLoading.value"
-        class="text-gray-400 text-center"
-      >
+      <div v-if="!authStore.isLoggedIn || loading.isLoading" class="text-gray-400 text-center">
         {{ randomMessage }}
       </div>
 
       <div v-else class="text-gray-400 text-center">
-        You are already logged in.
+        You're already signed in.
         <a href="#" class="text-primary" @click.prevent="authStore.onLogout('/login')"> Logout? </a>
       </div>
     </div>
@@ -98,12 +95,12 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
     <USeparator />
 
     <UFormField label="Email" name="email">
-      <UInput v-model="state.email" class="w-full" :disabled="loading.isLoading.value" />
+      <UInput v-model="form.email" class="w-full" :disabled="loading.isLoading.value" />
     </UFormField>
 
     <UFormField label="Password" name="password">
       <UInput
-        v-model="state.password"
+        v-model="form.password"
         :type="showPassword ? 'text' : 'password'"
         class="w-full"
         :disabled="loading.isLoading.value"

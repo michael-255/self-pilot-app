@@ -7,12 +7,11 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- Build custom auth page (Login)
-- Based on Auth status have the following:
-  - Indicator with Name and email
-  - Logout button
 - Remove content and routes you don't plan to use
 - Remove `nuxt-og-image` module and related usages in app
+- What should I do with the header on the `Settings` page?
+  - Use an empty layout for table pages
+  - Create a table header that allow you to go back to previous page
 
 ## Setup
 
