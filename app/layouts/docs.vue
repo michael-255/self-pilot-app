@@ -17,10 +17,7 @@ const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
                 <UContentSearchButton :collapsed="false" />
               </template>
 
-              <UContentNavigation
-                :navigation="navigation"
-                highlight
-              />
+              <UContentNavigation :navigation="navigation" highlight />
             </UPageAside>
           </template>
 

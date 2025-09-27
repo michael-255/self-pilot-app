@@ -1,7 +1,8 @@
 // @ts-check
 import withNuxt from './.nuxt/eslint.config.mjs'
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
-export default withNuxt({
+export default withNuxt([eslintPluginPrettierRecommended], {
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     'vue/no-multiple-template-root': 'off',
@@ -10,19 +11,18 @@ export default withNuxt({
       'PascalCase',
       {
         registeredComponentsOnly: false,
-        ignores: []
-      }
+        ignores: [],
+      },
     ],
     'vue/html-self-closing': [
       'error',
       {
         html: {
-          void: 'always'
-        }
-      }
+          void: 'always',
+        },
+      },
     ],
-    'eqeqeq': ['error', 'always'],
+    eqeqeq: ['error', 'always'],
     'comma-dangle': ['error', 'only-multiline'],
-    '@stylistic/comma-dangle': ['error', 'only-multiline']
-  }
+  },
 })

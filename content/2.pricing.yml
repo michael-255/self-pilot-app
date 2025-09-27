@@ -1,5 +1,7 @@
 title: A plan for every need
-description: Our plans are designed to meet the requirements of both beginners and players. Get the right plan that suits you.
+description:
+  Our plans are designed to meet the requirements of both beginners and players. Get the right plan
+  that suits you.
 seo:
   title: Pricing
   description: Choose the plan that's right for you.
@@ -66,13 +68,18 @@ logos:
     - i-simple-icons-cloudflare
 faq:
   title: Frequently asked questions
-  description: Culpa consectetur dolor pariatur commodo aliqua amet tempor nisi enim deserunt elit cillum.
+  description:
+    Culpa consectetur dolor pariatur commodo aliqua amet tempor nisi enim deserunt elit cillum.
   items:
     - label: Is this a secure service?
-      content: Qui sunt nostrud aliquip reprehenderit enim proident veniam magna aliquip velit occaecat eiusmod nisi deserunt sunt.
+      content:
+        Qui sunt nostrud aliquip reprehenderit enim proident veniam magna aliquip velit occaecat
+        eiusmod nisi deserunt sunt.
       defaultOpen: true
     - label: How can I cancel my subscription?
-      content: Consectetur irure Lorem nostrud adipisicing aliqua mollit Lorem sit officia magna eiusmod cupidatat.
+      content:
+        Consectetur irure Lorem nostrud adipisicing aliqua mollit Lorem sit officia magna eiusmod
+        cupidatat.
     - label: How does the free trial work?
       content: Quis officia commodo magna eu qui aliquip duis.
     - label: Can I switch plans later?

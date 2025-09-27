@@ -46,39 +46,22 @@ const features = [
     to: '/measurements',
   },
 ]
-
-const logger = useLogger()
-logger.debug('DEBUG message from index page')
-logger.info('INFO message from index page')
-logger.warn('WARN message from index page')
-logger.error('ERROR message from index page')
 </script>
 
 <template>
   <div v-if="page">
-    <UPageHero
-      :title="title"
-      :description="description"
-    >
+    <UPageHero :title="title" :description="description">
       <template #top>
         <HeroBackground />
         <LazyStarsBg />
       </template>
 
       <template #title>
-        <MDC
-          :value="title"
-          unwrap="p"
-        />
+        <MDC :value="title" unwrap="p" />
       </template>
 
       <UPageGrid>
-        <UPageCard
-          v-for="(item, index) in features"
-          :key="index"
-          v-bind="item"
-          spotlight
-        />
+        <UPageCard v-for="(item, index) in features" :key="index" v-bind="item" spotlight />
       </UPageGrid>
     </UPageHero>
   </div>

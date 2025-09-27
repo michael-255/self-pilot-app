@@ -9,13 +9,13 @@ export default defineNuxtConfig({
     'nuxt-og-image',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
   ],
 
   ssr: false,
 
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
   app: { baseURL: '/self-pilot-app/' },
@@ -26,13 +26,13 @@ export default defineNuxtConfig({
     public: {
       supabase: {
         url: process.env.NUXT_PUBLIC_SUPABASE_URL,
-        key: process.env.NUXT_PUBLIC_SUPABASE_KEY
-      }
-    }
+        key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+      },
+    },
   },
 
   routeRules: {
-    '/docs': { redirect: '/docs/getting-started', prerender: false }
+    '/docs': { redirect: '/docs/getting-started', prerender: false },
   },
 
   compatibilityDate: '2024-07-11',
@@ -40,10 +40,10 @@ export default defineNuxtConfig({
   nitro: { preset: 'static' },
 
   ogImage: {
-    enabled: false
+    enabled: false,
   },
 
   supabase: {
-    redirect: false // To login page
-  }
+    redirect: false, // To login page
+  },
 })

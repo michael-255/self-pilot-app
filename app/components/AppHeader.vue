@@ -6,9 +6,7 @@
   <UHeader>
     <template #left>
       <NuxtLink to="/">
-        <div class="text-2xl font-bold">
-          Self Pilot
-        </div>
+        <div class="text-2xl font-bold">Self Pilot</div>
       </NuxtLink>
     </template>
 
@@ -33,14 +31,7 @@
     </template>
 
     <template #body>
-      <UButton
-        label="Login"
-        color="neutral"
-        variant="subtle"
-        to="/login"
-        block
-        class="mb-3"
-      />
+      <UButton label="Login" color="neutral" variant="subtle" to="/login" block class="mb-3" />
 
       <UButton
         label="Settings"
@@ -51,12 +42,7 @@
         class="mb-3"
       />
 
-      <UButton
-        label="Exit"
-        color="error"
-        to="/"
-        block
-      />
+      <UButton label="Exit" color="error" to="/" block />
     </template>
   </UHeader>
 </template>

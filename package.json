@@ -8,6 +8,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
     "typecheck": "nuxt typecheck",
     "supabase:env": "npx tsx scripts/local-supabase-env.ts self-pilot-app"
   },
@@ -30,6 +33,10 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.9.0",
     "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-vue": "^10.5.0",
+    "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vue-tsc": "^3.0.8"
   },
