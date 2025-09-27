@@ -77,12 +77,15 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
 
       <div class="text-2xl font-bold">
         Welcome back
-        <template v-if="authStore.isLoggedIn && !loading.isLoading">
+        <template v-if="authStore.isLoggedIn && !loading.isLoading.value">
           {{ ' ' + authStore.user.name }}
         </template>
       </div>
 
-      <div v-if="!authStore.isLoggedIn || loading.isLoading" class="text-gray-400 text-center">
+      <div
+        v-if="!authStore.isLoggedIn || loading.isLoading.value"
+        class="text-gray-400 text-center"
+      >
         {{ randomMessage }}
       </div>
 
