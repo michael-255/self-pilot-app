@@ -39,7 +39,7 @@ const links = ref([
     <UPageSection>
       <UPageHeader title="Settings" :links />
 
-      <UPageBody>
+      <UPageList>
         <UUser
           :name="authStore.user.name || 'No user logged in'"
           :description="authStore.user.email || ''"
@@ -47,18 +47,39 @@ const links = ref([
           size="xl"
         />
 
-        <UPageFeature title="Options" icon="i-lucide-settings-2" />
-
-        <div>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus placeat repellendus
-          voluptatum doloribus dolorem, dolor corrupti! Ratione illo molestiae earum quae, quasi
-          enim voluptates ipsam velit exercitationem? Dignissimos, corporis beatae!
-        </div>
+        <br />
 
         <USwitch v-model="consoleLogs" size="lg" label="Console Logs" />
 
+        <br />
+
         <UPageFeature title="Data" icon="i-lucide-database" />
-      </UPageBody>
+
+        <br />
+
+        <div>
+          <UButton color="primary" icon="i-lucide-logs" size="lg"> View Logs </UButton>
+        </div>
+
+        <br />
+
+        <div>
+          <UButton color="error" icon="i-lucide-trash" size="lg"> Delete Logs </UButton>
+        </div>
+
+        <br />
+
+        <div v-for="i in 50" :key="i">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati fugiat temporibus
+          adipisci sunt nam, quia quod fuga. Ex amet itaque aliquid quisquam? Adipisci a modi
+          provident molestiae ducimus doloremque hic? Lorem ipsum dolor sit amet consectetur
+          adipisicing elit. Obcaecati fugiat temporibus adipisci sunt nam, quia quod fuga. Ex amet
+          itaque aliquid quisquam? Adipisci a modi provident molestiae ducimus doloremque hic? Lorem
+          ipsum dolor sit amet consectetur adipisicing elit. Obcaecati fugiat temporibus adipisci
+          sunt nam, quia quod fuga. Ex amet itaque aliquid quisquam? Adipisci a modi provident
+          molestiae ducimus doloremque hic?
+        </div>
+      </UPageList>
     </UPageSection>
   </UPage>
 </template>

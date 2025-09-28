@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 const colorMode = useColorMode()
 
 const color = computed(() => (colorMode.value === 'dark' ? '#020618' : 'white'))
@@ -18,6 +19,24 @@ useHead({
 useSeoMeta({
   titleTemplate: '%s - Nuxt SaaS template',
 })
+
+const showScrollTop = ref(false)
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+const handleScroll = () => {
+  showScrollTop.value = window.scrollY > window.innerHeight * 1.5
+}
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 </script>
 
 <template>
@@ -27,5 +46,15 @@ useSeoMeta({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+
+    <UButton
+      v-if="showScrollTop"
+      icon="i-lucide-arrow-up"
+      color="primary"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 shadow-lg"
+      size="lg"
+      aria-label="Scroll to top"
+      @click="scrollToTop"
+    />
   </UApp>
 </template>
