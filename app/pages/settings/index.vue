@@ -27,11 +27,6 @@ const links = ref([
     to: redirectPath || '/',
   },
 ])
-
-/*
-- View Logs (Data Table)
-- Delete Logs
-*/
 </script>
 
 <template>
