@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
+const { goToWithRedirect } = useRouting()
 </script>
 
 <template>
@@ -17,8 +18,8 @@ const authStore = useAuthStore()
         icon="i-lucide-settings"
         color="neutral"
         variant="ghost"
-        to="/settings"
         class="hidden lg:inline-flex"
+        @click="goToWithRedirect('/settings')"
       />
 
       <UButton
@@ -37,14 +38,29 @@ const authStore = useAuthStore()
         icon="i-lucide-log-in"
         variant="soft"
         class="hidden lg:inline-flex"
-        to="/login"
+        @click="goToWithRedirect('/login')"
       />
     </template>
 
     <template #body>
       <div class="space-y-4">
-        <UButton label="Settings" color="neutral" variant="subtle" to="/settings" block />
-        <UButton label="Logout" color="error" block @click="authStore.onLogout()" />
+        <UButton
+          label="Settings"
+          color="neutral"
+          variant="subtle"
+          block
+          @click="goToWithRedirect('/settings')"
+        />
+
+        <UButton
+          v-if="authStore.isLoggedIn"
+          label="Logout"
+          color="error"
+          block
+          @click="authStore.onLogout()"
+        />
+
+        <UButton v-else label="Sign In" block @click="goToWithRedirect('/login')" />
       </div>
     </template>
   </UHeader>

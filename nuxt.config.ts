@@ -4,9 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/ui',
-    '@nuxt/content',
     '@vueuse/nuxt',
-    'nuxt-og-image',
     '@pinia/nuxt',
     '@vueuse/nuxt',
     '@nuxtjs/supabase',
@@ -38,10 +36,6 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-07-11',
 
   nitro: { preset: 'static' },
-
-  ogImage: {
-    enabled: false,
-  },
 
   supabase: {
     redirect: false, // To login page

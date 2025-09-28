@@ -12,12 +12,12 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "typecheck": "nuxt typecheck",
-    "supabase:env": "npx tsx scripts/local-supabase-env.ts self-pilot-app"
+    "supabase:env": "npx tsx scripts/local-supabase-env.ts self-pilot-app",
+    "supabase:types": "supabase gen types typescript --local > app/types/supabase.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.68",
     "@iconify-json/simple-icons": "^1.2.53",
-    "@nuxt/content": "^3.7.1",
     "@nuxt/image": "^1.11.0",
     "@nuxt/ui": "^4.0.0",
     "@nuxtjs/supabase": "1.6.2",
@@ -27,7 +27,6 @@
     "better-sqlite3": "^12.4.1",
     "dexie": "^4.2.0",
     "nuxt": "^4.1.2",
-    "nuxt-og-image": "^5.1.11",
     "zod": "^4.1.11"
   },
   "devDependencies": {

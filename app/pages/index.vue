@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
+definePageMeta({
+  requiresAuth: false,
+})
 
 const title = 'Tools and apps for every day'
 const description = ''
@@ -7,9 +9,7 @@ const description = ''
 useSeoMeta({
   titleTemplate: '',
   title,
-  ogTitle: title,
   description,
-  ogDescription: description,
 })
 </script>
 
@@ -18,10 +18,6 @@ useSeoMeta({
     <template #top>
       <HeroBackground />
       <LazyStarsBg />
-    </template>
-
-    <template #title>
-      <MDC :value="title" unwrap="p" />
     </template>
 
     <UPageGrid>
@@ -39,7 +35,7 @@ useSeoMeta({
         icon="i-lucide-dumbbell"
         title="Fitness"
         description="Track your workouts and exercises with the ability to view charts."
-        :to="authStore.isLoggedIn ? '/fitness' : '/login'"
+        to="/fitness"
       />
 
       <UPageCard
@@ -47,7 +43,7 @@ useSeoMeta({
         icon="i-lucide-book-open"
         title="Journal"
         description="Capture your thoughts, ideas, and daily reflections in a searchable journal."
-        :to="authStore.isLoggedIn ? '/journal' : '/login'"
+        to="/journal"
       />
 
       <UPageCard
@@ -55,7 +51,7 @@ useSeoMeta({
         icon="i-lucide-dollar-sign"
         title="Budget"
         description="Manage your finances, track expenses, and plan your budget effectively."
-        :to="authStore.isLoggedIn ? '/budget' : '/login'"
+        to="/budget"
       />
 
       <UPageCard
@@ -63,7 +59,7 @@ useSeoMeta({
         icon="i-lucide-ruler"
         title="Measurements"
         description="Keep track of your diet, body measurements, and monitor your health over time."
-        :to="authStore.isLoggedIn ? '/measurements' : '/login'"
+        to="/measurements"
       />
     </UPageGrid>
   </UPageHero>

@@ -7,7 +7,6 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- Remove content and routes you don't plan to use
 - Remove `nuxt-og-image` module and related usages in app
 - What should I do with the header on the `Settings` page?
   - Use an empty layout for table pages

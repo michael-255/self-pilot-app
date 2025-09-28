@@ -14,31 +14,33 @@ export default function useLogger() {
     error: `${baseStyle} firebrick;`,
   }
 
-  async function debug(label: string, details?: any) {
+  const debug = async (label: string, details?: any) => {
     if (import.meta.env.DEV) {
-      await appLogsDatabase.logs.add(new AppLog(logLevels.enum.DEBUG, label, details))
-      console.log(loggerName, style.debug, `[${logLevels.enum.DEBUG}]`, label, details)
+      await logsDatabase.logs.add(new AppLog(logLevels.enum.DEBUG, label, details))
+      if (consoleLogs.value) {
+        console.log(loggerName, style.debug, `[${logLevels.enum.DEBUG}]`, label, details)
+      }
     }
   }
 
-  async function info(label: string, details?: any) {
-    await appLogsDatabase.logs.add(new AppLog(logLevels.enum.INFO, label, details))
+  const info = async (label: string, details?: any) => {
+    await logsDatabase.logs.add(new AppLog(logLevels.enum.INFO, label, details))
     if (consoleLogs.value) {
       console.info(loggerName, style.info, `[${logLevels.enum.INFO}]`, label, details)
     }
     toast.add({ color: 'info', title: label })
   }
 
-  async function warn(label: string, details?: any) {
-    await appLogsDatabase.logs.add(new AppLog(logLevels.enum.WARN, label, details))
+  const warn = async (label: string, details?: any) => {
+    await logsDatabase.logs.add(new AppLog(logLevels.enum.WARN, label, details))
     if (consoleLogs.value) {
       console.warn(loggerName, style.warn, `[${logLevels.enum.WARN}]`, label, details)
     }
     toast.add({ color: 'warning', title: label })
   }
 
-  async function error(label: string, details?: any) {
-    await appLogsDatabase.logs.add(new AppLog(logLevels.enum.ERROR, label, details))
+  const error = async (label: string, details?: any) => {
+    await logsDatabase.logs.add(new AppLog(logLevels.enum.ERROR, label, details))
     if (consoleLogs.value) {
       console.error(loggerName, style.error, `[${logLevels.enum.ERROR}]`, label, details)
     }

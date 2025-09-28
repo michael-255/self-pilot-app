@@ -4,6 +4,7 @@ import * as z from 'zod'
 
 definePageMeta({
   layout: 'auth',
+  requiresAuth: false,
 })
 
 useSeoMeta({
@@ -11,6 +12,7 @@ useSeoMeta({
   description: 'Login to your account to continue',
 })
 
+const route = useRoute()
 const router = useRouter()
 const logger = useLogger()
 const supabase = useSupabaseClient()
@@ -52,15 +54,19 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
 
     userEmail.value = payload.data.email
 
-    logger.info('Login successful', { email: payload.data.email })
-    await router.replace('/')
+    const redirectPath = Array.isArray(route.query.redirect)
+      ? route.query.redirect[0]
+      : route.query.redirect
+
+    logger.info('Sign in successful', { email: payload.data.email })
+    await router.replace(redirectPath || '/')
   } catch (e) {
-    logger.error('Login failed', e)
+    logger.error('Sign in failed', e)
 
     if (e instanceof Error) {
       errorMessage.value = e.message
     } else {
-      errorMessage.value = 'Login failed. Please try again.'
+      errorMessage.value = 'Sign in failed. Please try again.'
     }
 
     form.password = ''
@@ -77,18 +83,21 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
 
       <div class="text-2xl font-bold">
         Welcome back
-        <template v-if="authStore.isLoggedIn && !loading.isLoading">
+        <template v-if="authStore.isLoggedIn && !loading.isLoading.value">
           {{ ' ' + authStore.user.name }}
         </template>
       </div>
 
-      <div v-if="!authStore.isLoggedIn || loading.isLoading" class="text-gray-400 text-center">
+      <div
+        v-if="!authStore.isLoggedIn || loading.isLoading.value"
+        class="text-gray-400 text-center"
+      >
         {{ randomMessage }}
       </div>
 
       <div v-else class="text-gray-400 text-center">
         You're already signed in.
-        <a href="#" class="text-primary" @click.prevent="authStore.onLogout('/login')"> Logout? </a>
+        <a href="#" class="text-primary" @click.prevent="authStore.onLogout()"> Logout? </a>
       </div>
     </div>
 
@@ -129,7 +138,7 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
       variant="solid"
       :loading="loading.isLoading.value"
     >
-      Login
+      Continue
     </UButton>
   </UForm>
 </template>

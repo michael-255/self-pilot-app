@@ -38,7 +38,7 @@ export class AppLog {
 /**
  * Local Dexie.js database for storing application logs in IndexedDB.
  */
-export class AppLogsDatabase extends Dexie {
+export class LogsDatabase extends Dexie {
   // Required for easier TypeScript usage
   logs!: Table<AppLog>
 
@@ -53,8 +53,7 @@ export class AppLogsDatabase extends Dexie {
    * @returns The number of logs deleted
    */
   async deleteExpiredLogs() {
-    // Hardcoded retention duration: 6 months (15,552,000,000 ms)
-    const retentionDuration = 15_552_000_000
+    const retentionDuration = 7_776_000_000 // 3 months (7,776,000,000 ms)
     const allLogs = await this.logs.toArray()
     const now = Date.now()
 
@@ -88,4 +87,4 @@ export class AppLogsDatabase extends Dexie {
 /**
  * Pre-instantiated app logs database for use throughout the application.
  */
-export const appLogsDatabase = new AppLogsDatabase(appTitle)
+export const logsDatabase = new LogsDatabase(appTitle)
