@@ -7,10 +7,12 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- Remove `nuxt-og-image` module and related usages in app
-- What should I do with the header on the `Settings` page?
-  - Use an empty layout for table pages
-  - Create a table header that allow you to go back to previous page
+Data Tables
+
+- Add layout with a custom title and back button (redirect?)
+- Add pagination (limit rows per page to 100?)
+- Add sorting to columns
+- Add text searching
 
 ## Setup
 

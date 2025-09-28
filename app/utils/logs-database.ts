@@ -2,7 +2,7 @@ import Dexie, { liveQuery, type Observable, type Table } from 'dexie'
 import z from 'zod'
 import { appTitle } from './constants'
 
-export const logLevels = z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR'])
+export const logLevels = z.enum(['Debug', 'Info', 'Warn', 'Error'])
 
 export type LogLevel = z.infer<typeof logLevels>
 

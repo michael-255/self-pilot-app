@@ -11,7 +11,7 @@ export default function useRouting() {
    * Go back if previous route state is part of the app history, otherwise go to root path.
    */
   const goBack = () => {
-    logger.debug('Routing: goBack', { historyState: router?.options?.history?.state })
+    logger.debug('Route back', { historyState: router?.options?.history?.state })
 
     if (router?.options?.history?.state?.back) {
       router.back()
@@ -26,7 +26,7 @@ export default function useRouting() {
   const goToWithRedirect = (to: string) => {
     const redirect = route.path
 
-    logger.debug('Routing: goToPath', { to, redirect })
+    logger.debug('Route with redirect', { to, redirect })
 
     if (redirect && redirect !== to) {
       router.push({ path: to, query: { redirect } })
