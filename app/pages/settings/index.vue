@@ -118,7 +118,7 @@ const onTestLogger = () => {
                     color="error"
                     @click="
                       async () => {
-                        await logsDatabase.logs.clear()
+                        await localDatabase.logs.clear()
                         close()
                       }
                     "

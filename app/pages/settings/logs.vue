@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { AppLog } from '@/utils/logs-database'
-import { logsDatabase } from '@/utils/logs-database'
 import type { ColumnDef } from '@tanstack/vue-table'
 import { h, onMounted, onUnmounted, ref } from 'vue'
+import type { AppLog } from '~/utils/local-database'
 
 definePageMeta({
   requiresAuth: false,
@@ -13,7 +12,7 @@ const data = ref<AppLog[]>([])
 let subscription: any = null
 
 onMounted(() => {
-  subscription = logsDatabase.liveLogs().subscribe((logs: AppLog[]) => {
+  subscription = localDatabase.liveLogs().subscribe((logs: AppLog[]) => {
     data.value = logs
   })
 })

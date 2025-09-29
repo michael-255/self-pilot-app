@@ -36,9 +36,9 @@ export class AppLog {
 }
 
 /**
- * Local Dexie.js database for storing application logs in IndexedDB.
+ * Local Dexie.js database for storing application data in IndexedDB.
  */
-export class LogsDatabase extends Dexie {
+export class LocalDatabase extends Dexie {
   // Required for easier TypeScript usage
   logs!: Table<AppLog>
 
@@ -87,4 +87,4 @@ export class LogsDatabase extends Dexie {
 /**
  * Pre-instantiated app logs database for use throughout the application.
  */
-export const logsDatabase = new LogsDatabase(appTitle)
+export const localDatabase = new LocalDatabase(appTitle)

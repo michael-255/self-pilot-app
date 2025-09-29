@@ -16,13 +16,13 @@ export default function useLogger() {
   const debug = async (label: string, details?: any) => {
     // Debug logs are only stored in dev mode
     if (import.meta.env.DEV) {
-      await logsDatabase.logs.add(new AppLog(logLevels.enum.Debug, label, details))
+      await localDatabase.logs.add(new AppLog(logLevels.enum.Debug, label, details))
       console.log(loggerName, style.debug, `[${logLevels.enum.Debug}]`, label, details)
     }
   }
 
   const info = async (label: string, details?: any) => {
-    await logsDatabase.logs.add(new AppLog(logLevels.enum.Info, label, details))
+    await localDatabase.logs.add(new AppLog(logLevels.enum.Info, label, details))
     if (import.meta.env.DEV) {
       console.info(loggerName, style.info, `[${logLevels.enum.Info}]`, label, details)
     }
@@ -30,7 +30,7 @@ export default function useLogger() {
   }
 
   const warn = async (label: string, details?: any) => {
-    await logsDatabase.logs.add(new AppLog(logLevels.enum.Warn, label, details))
+    await localDatabase.logs.add(new AppLog(logLevels.enum.Warn, label, details))
     if (import.meta.env.DEV) {
       console.warn(loggerName, style.warn, `[${logLevels.enum.Warn}]`, label, details)
     }
@@ -38,7 +38,7 @@ export default function useLogger() {
   }
 
   const error = async (label: string, details?: any) => {
-    await logsDatabase.logs.add(new AppLog(logLevels.enum.Error, label, details))
+    await localDatabase.logs.add(new AppLog(logLevels.enum.Error, label, details))
     if (import.meta.env.DEV) {
       console.error(loggerName, style.error, `[${logLevels.enum.Error}]`, label, details)
     }
