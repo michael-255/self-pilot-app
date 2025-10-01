@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'fitness',
+})
+
 const title = 'Fitness'
 const description = 'This app is still under construction.'
 

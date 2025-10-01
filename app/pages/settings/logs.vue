@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import type { ColumnDef } from '@tanstack/vue-table'
-import { h, onMounted, onUnmounted, ref } from 'vue'
+import { h, onUnmounted, ref } from 'vue'
 import type { AppLog } from '~/utils/local-database'
+
+const search = ref('')
 
 definePageMeta({
   requiresAuth: false,
+  layout: false,
 })
 
 const data = ref<AppLog[]>([])
 
-let subscription: any = null
-
-onMounted(() => {
-  subscription = localDatabase.liveLogs().subscribe((logs: AppLog[]) => {
-    data.value = logs
-  })
+const subscription = localDatabase.liveLogs().subscribe((logs: AppLog[]) => {
+  data.value = logs
 })
 
 onUnmounted(() => {
@@ -34,7 +33,7 @@ const columns: ColumnDef<AppLog>[] = [
   },
   {
     accessorKey: 'created_at',
-    header: 'Created At',
+    header: 'Created Date',
     cell: ({ row }) => {
       const val = row.getValue('created_at')
       return val ? new Date(val as string).toLocaleString() : ''
@@ -100,5 +99,28 @@ const columns: ColumnDef<AppLog>[] = [
 </script>
 
 <template>
-  <UTable sticky :data="data" :columns="columns" />
+  <div>
+    <div
+      class="sticky top-0 z-10 bg-[var(--ui-bg)] border-b border-gray-700 flex items-center justify-between w-full p-4"
+    >
+      <NuxtLink to="/">
+        <div class="text-2xl font-bold">Logs</div>
+      </NuxtLink>
+
+      <UInput v-model="search" placeholder="Search" class="flex-grow max-w-md mx-4" size="lg" />
+
+      <UButton
+        variant="ghost"
+        color="neutral"
+        icon="i-lucide-x"
+        to="/settings"
+        class="p-0"
+        size="xl"
+      />
+    </div>
+
+    <UMain>
+      <UTable v-model:global-filter="search" sticky :data="data" :columns="columns" />
+    </UMain>
+  </div>
 </template>

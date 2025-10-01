@@ -1,6 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
   requiresAuth: false,
+  layout: 'feature',
+  featureTitle: 'Settings',
+  featureReturnTo: '/',
+  featureReturnLabel: 'Home',
 })
 
 const open = ref(false) // TODO
@@ -16,20 +20,9 @@ useSeoMeta({
 
 const route = useRoute()
 const router = useRouter()
+const { goToWithRedirect } = useRouting()
 const logger = useLogger()
 const authStore = useAuthStore()
-
-const redirectPath = Array.isArray(route.query.redirect)
-  ? route.query.redirect[0]
-  : route.query.redirect
-
-const links = ref([
-  {
-    label: 'Back',
-    icon: 'i-lucide-chevron-left',
-    to: redirectPath || '/',
-  },
-])
 
 /**
  * Test function for the logger should only be available in dev mode.
@@ -53,17 +46,15 @@ const onTestLogger = () => {
 <template>
   <UPage>
     <UPageSection>
-      <UPageHeader title="Settings" :links />
-
       <UPageList class="space-y-9">
         <div>
           <UPageFeature
-            icon="i-lucide-user-round-cog"
-            title="Account"
-            description="User account information when signed in."
+            icon="i-lucide-user"
+            title="Profile"
+            description="User profile information when signed in."
             class="mb-4"
           />
-          <div class="ml-8">
+          <div class="ml-8 space-y-4">
             <UUser
               v-if="authStore.isLoggedIn"
               :name="authStore.user.name || 'Anonymous'"
@@ -75,12 +66,28 @@ const onTestLogger = () => {
               "
               size="xl"
             />
+
             <UUser
               v-else
-              :name="authStore.user.name || 'No user'"
-              :description="authStore.user.email || ''"
+              name="No user"
+              description="Please sign in"
               :avatar="{ icon: 'i-lucide-circle-off' }"
               size="xl"
+            />
+
+            <UButton
+              v-if="authStore.isLoggedIn"
+              label="Logout"
+              color="error"
+              icon="i-lucide-log-out"
+              @click="authStore.onLogout()"
+            />
+
+            <UButton
+              v-else
+              label="Sign In"
+              icon="i-lucide-log-in"
+              @click="goToWithRedirect('/login')"
             />
           </div>
         </div>
@@ -137,16 +144,6 @@ const onTestLogger = () => {
               />
             </div>
           </div>
-        </div>
-
-        <div class="space-y-4">
-          <UPageFeature
-            title="Data"
-            icon="i-lucide-database"
-            description="View your personal data metrics from the application."
-            class="mb-4"
-          />
-          <div class="ml-8 space-y-4">Under construction...</div>
         </div>
       </UPageList>
     </UPageSection>

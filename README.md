@@ -7,12 +7,7 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-Data Tables
-
-- Add layout with a custom title and back button (redirect?)
-- Add pagination (limit rows per page to 100?)
-- Add sorting to columns
-- Add text searching
+- Start designing components and pages for the `Journal` app.
 
 ## Setup
 

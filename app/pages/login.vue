@@ -40,6 +40,12 @@ const authSchema = z.object({
 
 type AuthSchema = z.output<typeof authSchema>
 
+onMounted(() => {
+  if (authStore.isLoggedIn) {
+    router.replace('/')
+  }
+})
+
 const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
   try {
     loading.start({ force: true })
@@ -80,25 +86,8 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
   <UForm :schema="authSchema" :state="form" class="space-y-6" @submit="onSubmit">
     <div class="flex flex-col items-center space-y-3">
       <UIcon name="i-lucide-user" class="w-9 h-9" />
-
-      <div class="text-2xl font-bold">
-        Welcome back
-        <template v-if="authStore.isLoggedIn && !loading.isLoading.value">
-          {{ ' ' + authStore.user.name }}
-        </template>
-      </div>
-
-      <div
-        v-if="!authStore.isLoggedIn || loading.isLoading.value"
-        class="text-gray-400 text-center"
-      >
-        {{ randomMessage }}
-      </div>
-
-      <div v-else class="text-gray-400 text-center">
-        You're already signed in.
-        <a href="#" class="text-primary" @click.prevent="authStore.onLogout()"> Logout? </a>
-      </div>
+      <div class="text-2xl font-bold">Welcome back</div>
+      <div class="text-gray-400 text-center">{{ randomMessage }}</div>
     </div>
 
     <USeparator />
