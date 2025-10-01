@@ -3,14 +3,11 @@ const route = useRoute()
 
 const items = computed(() => [
   {
-    label: 'Today',
-    active: route.path.startsWith('/fitness'),
+    label: 'Writing',
+    active: route.path.startsWith('/journal'),
   },
   {
-    label: 'Workouts',
-  },
-  {
-    label: 'Exercises',
+    label: 'Search',
   },
 ])
 </script>
@@ -19,7 +16,7 @@ const items = computed(() => [
   <div>
     <UHeader>
       <template #left>
-        <NuxtLink to="/"> <div class="text-2xl font-bold">Fitness</div> </NuxtLink>
+        <NuxtLink to="/"> <div class="text-2xl font-bold">Journal</div> </NuxtLink>
       </template>
 
       <UNavigationMenu :items="items" variant="link" />

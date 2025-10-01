@@ -51,15 +51,12 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * Log out of Supabase and optionally replace the path.
    */
-  const onLogout = async (to?: string) => {
+  const onLogout = async (to: string = '/login') => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
 
     logger.info('Logout successful')
-
-    if (to) {
-      router.replace(to)
-    }
+    router.replace(to)
   }
 
   fetchUser() // Call on store init

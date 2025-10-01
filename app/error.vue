@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
+const router = useRouter()
+const logger = useLogger()
+
 const props = defineProps({
   error: {
     type: Object as PropType<NuxtError>,
     required: true,
   },
 })
+
+logger.debug('Error page loaded', { ...props.error })
 
 useHead({
   htmlAttrs: {
@@ -18,14 +23,28 @@ useSeoMeta({
   title: 'Page not found',
   description: 'We are sorry but this page could not be found.',
 })
-
-const logger = useLogger()
-logger.debug('Error page loaded', { ...props.error })
 </script>
 
 <template>
   <div>
-    <AppHeader />
+    <UHeader :toggle="false">
+      <template #left>
+        <NuxtLink to="/">
+          <div class="text-2xl font-bold">Self Pilot</div>
+        </NuxtLink>
+      </template>
+
+      <template #right>
+        <UColorModeButton />
+
+        <UButton
+          label="Settings"
+          variant="outline"
+          color="neutral"
+          @click="router.push('/settings')"
+        />
+      </template>
+    </UHeader>
 
     <UMain>
       <UContainer>

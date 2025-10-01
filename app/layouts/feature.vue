@@ -1,9 +1,14 @@
 <script setup lang="ts">
+/*
+Feature layout that provides a header with a title and a return button.
+*/
+
 const route = useRoute()
 
 const title = ref(String(route.meta.featureTitle))
-const returnTo = ref(String(route.meta.featureReturnTo))
-const returnLabel = ref(String(route.meta.featureReturnLabel))
+const titleTo = ref(String(route.meta.featureTitleTo))
+const buttonTo = ref(String(route.meta.featureButtonTo))
+const buttonLabel = ref(String(route.meta.featureButtonLabel))
 
 watch(
   () => route.meta.featureTitle,
@@ -13,16 +18,23 @@ watch(
 )
 
 watch(
-  () => route.meta.featureReturnTo,
-  (newReturnTo) => {
-    returnTo.value = String(newReturnTo)
+  () => route.meta.featureTitleTo,
+  (newTitleReturnTo) => {
+    titleTo.value = String(newTitleReturnTo)
   },
 )
 
 watch(
-  () => route.meta.featureReturnLabel,
+  () => route.meta.featureButtonTo,
+  (newReturnTo) => {
+    buttonTo.value = String(newReturnTo)
+  },
+)
+
+watch(
+  () => route.meta.featureButtonLabel,
   (newReturnLabel) => {
-    returnLabel.value = String(newReturnLabel)
+    buttonLabel.value = String(newReturnLabel)
   },
 )
 </script>
@@ -31,18 +43,20 @@ watch(
   <div>
     <UHeader :toggle="false">
       <template #left>
-        <NuxtLink to="/">
+        <NuxtLink :to="titleTo">
           <div class="text-2xl font-bold">{{ title }}</div>
         </NuxtLink>
       </template>
 
       <template #right>
+        <UColorModeButton />
+
         <UButton
-          :label="returnLabel"
+          :label="buttonLabel"
           variant="outline"
           color="neutral"
           icon="i-lucide-chevron-left"
-          :to="returnTo"
+          :to="buttonTo"
         />
       </template>
     </UHeader>

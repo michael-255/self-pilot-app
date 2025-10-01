@@ -3,13 +3,16 @@ import type { ColumnDef } from '@tanstack/vue-table'
 import { h, onUnmounted, ref } from 'vue'
 import type { AppLog } from '~/utils/local-database'
 
-const search = ref('')
-
 definePageMeta({
-  requiresAuth: false,
   layout: false,
 })
 
+useSeoMeta({
+  title: 'Logs',
+  description: 'View application logs',
+})
+
+const search = ref('')
 const data = ref<AppLog[]>([])
 
 const subscription = localDatabase.liveLogs().subscribe((logs: AppLog[]) => {
@@ -99,28 +102,19 @@ const columns: ColumnDef<AppLog>[] = [
 </script>
 
 <template>
-  <div>
-    <div
-      class="sticky top-0 z-10 bg-[var(--ui-bg)] border-b border-gray-700 flex items-center justify-between w-full p-4"
-    >
-      <NuxtLink to="/">
-        <div class="text-2xl font-bold">Logs</div>
-      </NuxtLink>
+  <div
+    class="sticky top-0 z-10 bg-[var(--ui-bg)] border-b border-gray-300 dark:border-gray-700 flex items-center justify-between w-full p-3"
+  >
+    <NuxtLink to="/">
+      <div class="text-2xl font-bold">Logs</div>
+    </NuxtLink>
 
-      <UInput v-model="search" placeholder="Search" class="flex-grow max-w-md mx-4" size="lg" />
+    <UInput v-model="search" placeholder="Search" class="flex-grow max-w-md mx-4" size="lg" />
 
-      <UButton
-        variant="ghost"
-        color="neutral"
-        icon="i-lucide-x"
-        to="/settings"
-        class="p-0"
-        size="xl"
-      />
-    </div>
-
-    <UMain>
-      <UTable v-model:global-filter="search" sticky :data="data" :columns="columns" />
-    </UMain>
+    <UButton variant="ghost" color="neutral" icon="i-lucide-x" to="/settings" />
   </div>
+
+  <UMain>
+    <UTable v-model:global-filter="search" sticky :data :columns />
+  </UMain>
 </template>

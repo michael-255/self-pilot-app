@@ -38,6 +38,6 @@ export default defineNuxtConfig({
   nitro: { preset: 'static' },
 
   supabase: {
-    redirect: false, // To login page
+    redirect: true, // To login page if not signed in
   },
 })

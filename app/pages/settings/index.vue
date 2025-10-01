@@ -1,19 +1,13 @@
 <script setup lang="ts">
-definePageMeta({
-  requiresAuth: false,
-  layout: 'feature',
-  featureTitle: 'Settings',
-  featureReturnTo: '/',
-  featureReturnLabel: 'Home',
-})
+import { ref } from 'vue'
+import { localDatabase } from '~/utils/local-database'
 
-const open = ref(false) // TODO
+const open = ref(false)
 const isDevMode = import.meta.env.DEV
 const title = 'Settings'
-const description = 'This app is still under construction.'
+const description = 'Manage your profile and application logs'
 
 useSeoMeta({
-  titleTemplate: '',
   title,
   description,
 })
@@ -23,6 +17,32 @@ const router = useRouter()
 const { goToWithRedirect } = useRouting()
 const logger = useLogger()
 const authStore = useAuthStore()
+
+const logCounts = ref<{
+  all: number
+  debug: number
+  info: number
+  warn: number
+  error: number
+}>({
+  all: 0,
+  debug: 0,
+  info: 0,
+  warn: 0,
+  error: 0,
+})
+
+const subscription = localDatabase
+  .liveLogCounts()
+  .subscribe(
+    (counts: { all: number; debug: number; info: number; warn: number; error: number }) => {
+      logCounts.value = counts
+    },
+  )
+
+onUnmounted(() => {
+  if (subscription) subscription.unsubscribe()
+})
 
 /**
  * Test function for the logger should only be available in dev mode.
@@ -45,107 +65,116 @@ const onTestLogger = () => {
 
 <template>
   <UPage>
-    <UPageSection>
+    <UContainer class="pb-16">
+      <UPageHeader title="Settings" class="mb-9" />
+
       <UPageList class="space-y-9">
-        <div>
-          <UPageFeature
-            icon="i-lucide-user"
-            title="Profile"
-            description="User profile information when signed in."
-            class="mb-4"
+        <UPageFeature
+          icon="i-lucide-user"
+          title="Profile"
+          description="User profile information when signed in."
+          class="mb-4"
+        />
+        <div class="ml-8 space-y-4">
+          <UUser
+            :name="authStore.user.name"
+            :description="authStore.user.email"
+            :avatar="
+              authStore.user.name
+                ? { text: authStore.user.name.slice(0, 2) }
+                : { icon: 'i-lucide-user' }
+            "
+            size="xl"
           />
-          <div class="ml-8 space-y-4">
-            <UUser
-              v-if="authStore.isLoggedIn"
-              :name="authStore.user.name || 'Anonymous'"
-              :description="authStore.user.email || 'None'"
-              :avatar="
-                authStore.user.name
-                  ? { text: authStore.user.name.slice(0, 2) }
-                  : { icon: 'i-lucide-user' }
-              "
-              size="xl"
-            />
 
-            <UUser
-              v-else
-              name="No user"
-              description="Please sign in"
-              :avatar="{ icon: 'i-lucide-circle-off' }"
-              size="xl"
-            />
-
-            <UButton
-              v-if="authStore.isLoggedIn"
-              label="Logout"
-              color="error"
-              icon="i-lucide-log-out"
-              @click="authStore.onLogout()"
-            />
-
-            <UButton
-              v-else
-              label="Sign In"
-              icon="i-lucide-log-in"
-              @click="goToWithRedirect('/login')"
-            />
-          </div>
+          <UButton
+            label="Logout"
+            color="error"
+            icon="i-lucide-log-out"
+            @click="authStore.onLogout()"
+          />
         </div>
 
-        <div class="space-y-4">
-          <UPageFeature
-            title="Logs"
-            icon="i-lucide-logs"
-            description="View or delete client side application logs."
-            class="mb-4"
-          />
-          <div class="ml-8 space-y-4">
-            <div>
-              <UButton
-                color="primary"
-                icon="i-lucide-text-search"
-                size="lg"
-                label="View Logs"
-                @click="router.push('/settings/logs')"
-              />
-            </div>
+        <UPageFeature
+          title="Logs"
+          icon="i-lucide-logs"
+          description="View or delete client side application logs."
+          class="mb-4"
+        />
+        <div class="ml-8 space-y-4">
+          <div class="space-x-2">
+            <UBadge :label="`All: ${logCounts.all}`" variant="outline" color="neutral" />
+            <UBadge
+              :label="`Debug: ${logCounts.debug}`"
+              variant="outline"
+              color="neutral"
+              class="text-purple-400"
+            />
+            <UBadge
+              :label="`Info: ${logCounts.info}`"
+              variant="outline"
+              color="neutral"
+              class="text-blue-400"
+            />
+            <UBadge
+              :label="`Warn: ${logCounts.warn}`"
+              variant="outline"
+              color="neutral"
+              class="text-orange-400"
+            />
+            <UBadge
+              :label="`Error: ${logCounts.error}`"
+              variant="outline"
+              color="neutral"
+              class="text-red-400"
+            />
+          </div>
 
-            <div>
-              <UModal v-model:open="open" title="Delete Logs" :ui="{ footer: 'justify-end' }">
-                <UButton color="error" icon="i-lucide-trash" size="lg" label="Delete Logs" />
+          <div>
+            <UButton
+              color="primary"
+              icon="i-lucide-text-search"
+              size="lg"
+              label="View Logs"
+              @click="router.push('/settings/logs')"
+            />
+          </div>
 
-                <template #body>
-                  Are you sure you want to delete all locally stored logs? This action cannot be
-                  undone.
-                </template>
+          <div>
+            <UModal v-model:open="open" title="Delete Logs" :ui="{ footer: 'justify-end' }">
+              <UButton color="error" icon="i-lucide-trash" size="lg" label="Delete Logs" />
 
-                <template #footer="{ close }">
-                  <UButton
-                    label="Confirm"
-                    color="error"
-                    @click="
-                      async () => {
-                        await localDatabase.logs.clear()
-                        close()
-                      }
-                    "
-                  />
-                </template>
-              </UModal>
-            </div>
+              <template #body>
+                Are you sure you want to delete all locally stored logs? This action cannot be
+                undone.
+              </template>
 
-            <div v-if="isDevMode">
-              <UButton
-                color="neutral"
-                icon="i-lucide-flask-conical"
-                size="lg"
-                label="Test Logger"
-                @click="onTestLogger"
-              />
-            </div>
+              <template #footer="{ close }">
+                <UButton
+                  label="Confirm"
+                  color="error"
+                  @click="
+                    async () => {
+                      await localDatabase.logs.clear()
+                      close()
+                    }
+                  "
+                />
+              </template>
+            </UModal>
+          </div>
+
+          <div v-if="isDevMode">
+            <UButton
+              color="neutral"
+              icon="i-lucide-flask-conical"
+              size="lg"
+              label="Test Logger"
+              @click="onTestLogger"
+            />
           </div>
         </div>
       </UPageList>
-    </UPageSection>
+    </UContainer>
   </UPage>
 </template>

@@ -82,6 +82,51 @@ export class LocalDatabase extends Dexie {
   liveLogs(): Observable<AppLog[]> {
     return liveQuery(() => this.logs.orderBy('created_at').reverse().toArray())
   }
+
+  /**
+   * Returns an observable with counts for all logs at each log level.
+   */
+  liveLogCounts(): Observable<{
+    all: number
+    debug: number
+    info: number
+    warn: number
+    error: number
+  }> {
+    return liveQuery(async () => {
+      const logs = await this.logs.toArray()
+
+      let debug = 0
+      let info = 0
+      let warn = 0
+      let error = 0
+
+      for (const log of logs) {
+        switch (log.log_level) {
+          case 'Debug':
+            debug++
+            break
+          case 'Info':
+            info++
+            break
+          case 'Warn':
+            warn++
+            break
+          case 'Error':
+            error++
+            break
+        }
+      }
+
+      return {
+        all: logs.length,
+        debug,
+        info,
+        warn,
+        error,
+      }
+    })
+  }
 }
 
 /**

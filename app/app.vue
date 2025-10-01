@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-const colorMode = useColorMode()
 
+const colorMode = useColorMode()
 const color = computed(() => (colorMode.value === 'dark' ? '#020618' : 'white'))
 
 useHead({
@@ -17,7 +17,7 @@ useHead({
 })
 
 useSeoMeta({
-  titleTemplate: '%s - Nuxt SaaS template',
+  titleTemplate: 'Self Pilot - %s',
 })
 
 const showScrollTop = ref(false)
