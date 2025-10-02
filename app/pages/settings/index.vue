@@ -14,10 +14,8 @@ useSeoMeta({
 
 const route = useRoute()
 const router = useRouter()
-const { goToWithRedirect } = useRouting()
 const logger = useLogger()
 const authStore = useAuthStore()
-
 const logCounts = ref<{
   all: number
   debug: number
