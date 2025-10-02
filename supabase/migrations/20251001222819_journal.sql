@@ -24,6 +24,7 @@ CREATE TABLE app_journal.writing_categories (
 );
 
 ALTER TABLE app_journal.writing_categories ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON app_journal.writing_categories TO authenticated, service_role;
 
 CREATE POLICY "Authenticated users can read categories" ON app_journal.writing_categories
 FOR SELECT TO authenticated
@@ -33,10 +34,10 @@ CREATE TABLE app_journal.writing_entries (
   id UUID PRIMARY KEY DEFAULT extensions.gen_random_uuid(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  owner_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   category_id INTEGER NOT NULL REFERENCES app_journal.writing_categories(id),
-  subject TEXT NOT NULL,
-  body TEXT NOT NULL,
+  subject TEXT NOT NULL CHECK (char_length(subject) <= 100),
+  body TEXT NOT NULL CHECK (char_length(body) <= 30000),
   search_vector tsvector GENERATED ALWAYS AS (
     setweight(to_tsvector('english', COALESCE(subject, '')), 'A') ||
     setweight(to_tsvector('english', COALESCE(body, '')), 'B')
@@ -137,7 +138,6 @@ RETURNS TABLE (
   id UUID,
   created_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ,
-  owner_id UUID,
   category_id INTEGER,
   subject TEXT,
   body TEXT,
@@ -151,7 +151,6 @@ AS $$
     e.id,
     e.created_at,
     e.updated_at,
-    e.owner_id,
     e.category_id,
     e.subject,
     e.body,
@@ -170,13 +169,106 @@ AS $$
       e.search_vector @@ plainto_tsquery('english', in_query)
     )
   ORDER BY rank DESC NULLS LAST, e.created_at DESC
-  LIMIT 50 OFFSET in_offset
+  LIMIT 20 OFFSET in_offset
 $$;
 
--- TODO: get_writing_entry
+REVOKE EXECUTE ON FUNCTION api_journal.search_writing_entries(INTEGER, TIMESTAMPTZ, TIMESTAMPTZ, TEXT, INTEGER) FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.search_writing_entries(INTEGER, TIMESTAMPTZ, TIMESTAMPTZ, TEXT, INTEGER) TO authenticated, service_role;
 
--- TODO: create_writing_entry
+CREATE OR REPLACE FUNCTION api_journal.get_writing_entry(in_id UUID)
+RETURNS TABLE (
+  id UUID,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  category_id INTEGER,
+  subject TEXT,
+  body TEXT
+)
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+  SELECT
+    e.id,
+    e.created_at,
+    e.updated_at,
+    e.category_id,
+    e.subject,
+    e.body
+  FROM app_journal.writing_entries e
+  WHERE e.id = in_id
+    AND e.owner_id = auth.uid()
+$$;
 
--- TODO: update_writing_entry
+REVOKE EXECUTE ON FUNCTION api_journal.get_writing_entry(UUID) FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.get_writing_entry(UUID) TO authenticated, service_role;
 
--- TODO: delete_writing_entry
+CREATE OR REPLACE FUNCTION api_journal.create_writing_entry(
+  in_category_id INTEGER,
+  in_subject TEXT,
+  in_body TEXT
+)
+RETURNS TABLE (
+  id UUID,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  category_id INTEGER,
+  subject TEXT,
+  body TEXT
+)
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+  INSERT INTO app_journal.writing_entries (category_id, subject, body)
+  VALUES (in_category_id, in_subject, in_body)
+  RETURNING id, created_at, updated_at, category_id, subject, body
+$$;
+
+REVOKE EXECUTE ON FUNCTION api_journal.create_writing_entry(INTEGER, TEXT, TEXT) FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.create_writing_entry(INTEGER, TEXT, TEXT) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION api_journal.update_writing_entry(
+  in_id UUID,
+  in_category_id INTEGER DEFAULT NULL,
+  in_subject TEXT DEFAULT NULL,
+  in_body TEXT DEFAULT NULL
+)
+RETURNS TABLE (
+  id UUID,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  category_id INTEGER,
+  subject TEXT,
+  body TEXT
+)
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+  UPDATE app_journal.writing_entries
+  SET
+    category_id = COALESCE(in_category_id, category_id),
+    subject = COALESCE(in_subject, subject),
+    body = COALESCE(in_body, body)
+  WHERE id = in_id
+    AND owner_id = auth.uid()
+  RETURNING id, created_at, updated_at, category_id, subject, body
+$$;
+
+REVOKE EXECUTE ON FUNCTION api_journal.update_writing_entry(UUID, INTEGER, TEXT, TEXT) FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.update_writing_entry(UUID, INTEGER, TEXT, TEXT) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION api_journal.delete_writing_entry(in_id UUID)
+RETURNS VOID
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+  DELETE FROM app_journal.writing_entries
+  WHERE id = in_id
+    AND owner_id = auth.uid()
+$$;
+
+REVOKE EXECUTE ON FUNCTION api_journal.delete_writing_entry(UUID) FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.delete_writing_entry(UUID) TO authenticated, service_role;

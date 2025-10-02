@@ -91,3 +91,20 @@ BEGIN
   RETURN new_user_id;
 END;
 $$;
+
+--
+-- Seed Writing Entry
+--
+CREATE OR REPLACE PROCEDURE seeding.create_writing_entry(
+  in_owner_id UUID,
+  in_category_id INTEGER,
+  in_subject TEXT,
+  in_body TEXT
+)
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  INSERT INTO app_journal.writing_entries (owner_id, category_id, subject, body)
+  VALUES (in_owner_id, in_category_id, in_subject, in_body);
+$$;
