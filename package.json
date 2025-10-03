@@ -13,7 +13,7 @@
     "format:fix": "prettier --write .",
     "typecheck": "nuxt typecheck",
     "supabase:env": "npx tsx scripts/local-supabase-env.ts self-pilot-app",
-    "supabase:types": "supabase gen types typescript --local > app/types/supabase.ts"
+    "supabase:types": "yes | npx supabase gen types typescript --local > app/types/supabase.ts"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.68",

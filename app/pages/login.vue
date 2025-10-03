@@ -121,7 +121,7 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
 
     <UButton
       type="submit"
-      class="w-full justify-center text-white"
+      class="w-full justify-center"
       color="primary"
       variant="solid"
       :loading="loading.isLoading.value"
