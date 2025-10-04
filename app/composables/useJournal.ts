@@ -14,6 +14,11 @@ export default function useJournal() {
   const categories = Constants.api_journal.Enums.writing_category.flat()
 
   /**
+   * Categories list including "Any Category" option.
+   */
+  const categoriesWithAny = ['Any Category', ...Constants.api_journal.Enums.writing_category.flat()]
+
+  /**
    * User's selected search category, persisted in local storage.
    */
   const searchCategory = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
@@ -224,6 +229,7 @@ export default function useJournal() {
 
   return {
     categories,
+    categoriesWithAny,
     searchCategory,
     writingCategory,
     writingSubject,

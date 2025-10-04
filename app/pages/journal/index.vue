@@ -96,8 +96,6 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
         </div>
       </div>
 
-      <div class="text-lg my-4" />
-
       <UForm :schema :state class="space-y-4" @submit="onFinishWriting">
         <UFormField name="category">
           <USelect
@@ -105,7 +103,7 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
             :items="categories"
             placeholder="Category"
             size="xl"
-            class="w-48"
+            class="w-full sm:w-48"
           />
         </UFormField>
 

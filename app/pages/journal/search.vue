@@ -13,7 +13,8 @@ useSeoMeta({
   description,
 })
 
-const { searchCategory, categories, useSearchWritingEntries } = useJournal()
+const { searchCategory, categoriesWithAny, useSearchWritingEntries } = useJournal()
+
 const { data } = useSearchWritingEntries({
   query: 'entry',
   offset: 0,
@@ -34,12 +35,20 @@ const modelValue = shallowRef({
 <template>
   <UPage>
     <UContainer class="pb-16">
+      <div class="text-lg my-4">
+        Search Writings
+
+        <div class="text-sm text-gray-600 dark:text-gray-400 h-4">
+          Use the search box and filters below to look through your writing entries.
+        </div>
+      </div>
+
       <USelect
         v-model="searchCategory"
-        :items="categories"
+        :items="categoriesWithAny"
         placeholder="Category"
         size="xl"
-        class="w-48 my-4"
+        class="w-full sm:w-48 mb-4"
       />
 
       <UInput v-model="query" placeholder="Search..." class="w-full" size="xl" />
