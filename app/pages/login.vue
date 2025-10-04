@@ -44,38 +44,37 @@ onMounted(() => {
 })
 
 const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
-  try {
-    loading.start({ force: true })
-    errorMessage.value = ''
+  loading.start({ force: true })
+  errorMessage.value = ''
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: payload.data.email,
-      password: payload.data.password!,
-    })
+  const { error } = await supabase.auth.signInWithPassword({
+    email: payload.data.email,
+    password: payload.data.password!,
+  })
 
-    if (error) throw error
+  if (error) {
+    logger.error('Sign in failed', error)
 
-    userEmail.value = payload.data.email
-
-    const redirectPath = Array.isArray(route.query.redirect)
-      ? route.query.redirect[0]
-      : route.query.redirect
-
-    logger.info('Sign in successful', { email: payload.data.email })
-    await router.replace(redirectPath || '/')
-  } catch (e) {
-    logger.error('Sign in failed', e)
-
-    if (e instanceof Error) {
-      errorMessage.value = e.message
+    if (error instanceof Error) {
+      errorMessage.value = error.message
     } else {
       errorMessage.value = 'Sign in failed. Please try again.'
     }
 
     state.password = ''
-  } finally {
     loading.finish({ force: true })
+    return
   }
+
+  userEmail.value = payload.data.email
+
+  const redirectPath = Array.isArray(route.query.redirect)
+    ? route.query.redirect[0]
+    : route.query.redirect
+
+  logger.info('Sign in successful', { email: payload.data.email })
+  await router.replace(redirectPath || '/')
+  loading.finish({ force: true })
 }
 </script>
 
@@ -118,13 +117,12 @@ const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
     </div>
 
     <UButton
+      label="Continue"
       type="submit"
       class="w-full justify-center"
       color="primary"
       variant="solid"
-      :loading="loading.isLoading.value"
-    >
-      Continue
-    </UButton>
+      :disabled="loading.isLoading.value"
+    />
   </UForm>
 </template>

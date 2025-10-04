@@ -77,6 +77,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION app_journal.set_updated_at() FROM anon, authenticated;
 
+CREATE OR REPLACE FUNCTION api_journal.get_last_writing_date()
+RETURNS TIMESTAMPTZ
+LANGUAGE sql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+  SELECT MAX(created_at)
+  FROM app_journal.writing_entries
+  WHERE owner_id = auth.uid()
+$$;
+
+REVOKE EXECUTE ON FUNCTION api_journal.get_last_writing_date() FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.get_last_writing_date() TO authenticated, service_role;
+
 CREATE OR REPLACE FUNCTION api_journal.search_writing_entries(
   in_category api_journal.writing_category DEFAULT NULL,
   in_start_date TIMESTAMPTZ DEFAULT NULL,

@@ -7,18 +7,12 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- Build a modal component (for confirmations/deletes)?
-
-- `/journal` - HOME (new writing entry)
-  - Writing prompt that can be rotated through (build 100+ prompts using AI for each category)
-  - Show stats (words, time to read)
-
-- `/journal/metrics` - METRICS (_review_)
-  - Show stats (words, time to read)
-  - Graph of writings over time (day/week/month/year)
-  - Most popular categories
-  - Average words per writing
-  - Average time to read per writing
+- `/journal/search` - SEARCH **PRIORITY**
+  - Search by category, start date, end date, and search query
+  - list up to 20 results at a time
+  - Show stats on each result (words, time to read)
+  - `Load more results` button at the bottom
+  - each result should have a menu to `read`, `edit`, and `delete`
 
 - `/journal/read/:id` - READ
   - Use nice typography
@@ -31,12 +25,12 @@ A collection of tools and mini-apps for day-to-day life.
   - `Read` button (goto read route)
   - `Delete` button (ask for confirmation)
 
-- `/journal/search` - SEARCH **PRIORITY**
-  - Search by category, start date, end date, and search query
-  - list up to 20 results at a time
-  - Show stats on each result (words, time to read)
-  - `Load more results` button at the bottom
-  - each result should have a menu to `read`, `edit`, and `delete`
+- `/journal/metrics` - METRICS (_review_)
+  - Show stats (words, time to read)
+  - Graph of writings over time (day/week/month/year)
+  - Most popular categories
+  - Average words per writing
+  - Average time to read per writing
 
 ## Setup
 

@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { Constants, type Database } from '~/types/supabase'
 
 /**
@@ -41,16 +42,14 @@ export default function useJournal() {
   /**
    * Utility to get the word count and estimated reading time for a given set of texts.
    */
-  const getWritingMetrics = (texts: string[]) => {
+  const getWritingMetrics = (text: string) => {
     let wordCount = 0
+    const characters = text.length
 
     // Calculate word count
-    const combined = texts.filter(Boolean).join(' ')
-    const characters = combined.length
-
-    if (combined) {
+    if (text) {
       const segmenter = new Intl.Segmenter('en', { granularity: 'word' })
-      for (const segment of segmenter.segment(combined)) {
+      for (const segment of segmenter.segment(text)) {
         if (segment.isWordLike) wordCount++
       }
     }
@@ -58,6 +57,35 @@ export default function useJournal() {
     // Calculate reading time assuming 200 words per minute
     const readingTime = Math.max(0, Math.ceil(wordCount / 200))
     return { wordCount, readingTime, characters }
+  }
+
+  /**
+   * Fetch the date of the last writing entry.
+   */
+  const useGetLastWritingDate = () => {
+    const {
+      data: lastWritingDate,
+      pending,
+      error,
+      refresh,
+    } = useAsyncData('lastWritingDate', async () => {
+      const { data, error } = await supabase
+        .schema('api_journal')
+        .rpc('get_last_writing_date')
+        .single()
+
+      if (error) throw error
+
+      logger.debug('Fetched last writing date:', data)
+      return data
+    })
+
+    const lastWritingTimeAgo = computed(() => {
+      if (!lastWritingDate.value) return ''
+      return useTimeAgoIntl(lastWritingDate.value)
+    })
+
+    return { lastWritingDate, lastWritingTimeAgo, pending, error, refresh }
   }
 
   /**
@@ -87,13 +115,7 @@ export default function useJournal() {
           in_offset: offset,
         })
 
-        if (error) {
-          logger.error('Error searching writing entries:', error)
-          showError({
-            statusCode: 500,
-            statusMessage: 'Internal Server Error',
-          })
-        }
+        if (error) throw error
 
         logger.debug('Searched writing entries:', data)
         return data
@@ -113,13 +135,7 @@ export default function useJournal() {
         .rpc('get_writing_entry', { in_id: id })
         .single()
 
-      if (error) {
-        logger.error('Error fetching writing entry:', error)
-        showError({
-          statusCode: 500,
-          statusMessage: 'Internal Server Error',
-        })
-      }
+      if (error) throw error
 
       logger.debug(`Fetched writing entry:`, data)
       return data
@@ -150,15 +166,11 @@ export default function useJournal() {
       .single()
 
     if (error) {
-      logger.error('Error creating writing entry:', error)
-      showError({
-        statusCode: 500,
-        statusMessage: 'Internal Server Error',
-      })
+      return { data: null, error }
     }
 
     logger.debug('Created writing entry:', data)
-    return data
+    return { data, error: null }
   }
 
   /**
@@ -186,15 +198,11 @@ export default function useJournal() {
       .single()
 
     if (error) {
-      logger.error('Error updating writing entry:', error)
-      showError({
-        statusCode: 500,
-        statusMessage: 'Internal Server Error',
-      })
+      return { data: null, error }
     }
 
     logger.debug('Updated writing entry:', data)
-    return data
+    return { data, error: null }
   }
 
   /**
@@ -207,15 +215,11 @@ export default function useJournal() {
       .single()
 
     if (error) {
-      logger.error('Error deleting writing entry:', error)
-      showError({
-        statusCode: 500,
-        statusMessage: 'Internal Server Error',
-      })
+      return { data: null, error }
     }
 
     logger.debug(`Deleted writing entry`, id)
-    return true
+    return { data: true, error: null }
   }
 
   return {
@@ -225,6 +229,7 @@ export default function useJournal() {
     writingSubject,
     writingBody,
     getWritingMetrics,
+    useGetLastWritingDate,
     useSearchWritingEntries,
     useGetWritingEntry,
     createWritingEntry,

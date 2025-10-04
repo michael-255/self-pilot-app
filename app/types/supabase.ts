@@ -34,6 +34,10 @@ export type Database = {
         Args: { in_id: string }
         Returns: undefined
       }
+      get_last_writing_date: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_writing_entry: {
         Args: { in_id: string }
         Returns: {

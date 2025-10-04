@@ -23,11 +23,18 @@ const {
   writingSubject,
   writingBody,
   categories,
+  useGetLastWritingDate,
   createWritingEntry,
   getWritingMetrics,
 } = useJournal()
+const {
+  lastWritingTimeAgo,
+  pending: lastWritingDatePending,
+  refresh: refeshLastWritingDate,
+} = useGetLastWritingDate()
+
 const bodyPlaceholder = getInspirationalMessage()
-const writingMetrics = computed(() => getWritingMetrics([state.subject, state.body]))
+const writingMetrics = computed(() => getWritingMetrics(state.body))
 
 const state = reactive({
   category: writingCategory,
@@ -55,20 +62,21 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
     description: 'Are you ready to finish this writing session and save it?',
     color: 'primary',
     onConfirm: async () => {
-      try {
-        await createWritingEntry({
-          category: payload.data.category,
-          subject: payload.data.subject,
-          body: payload.data.body,
-        })
+      const { data, error } = await createWritingEntry({
+        category: payload.data.category,
+        subject: payload.data.subject,
+        body: payload.data.body,
+      })
 
-        state.subject = ''
-        state.body = ''
-
-        logger.info('Writing entry finished and saved')
-      } catch (error) {
+      if (error) {
         logger.error('Error creating writing entry:', error)
+        return
       }
+
+      state.subject = ''
+      state.body = ''
+      refeshLastWritingDate()
+      logger.info('Writing entry finished and saved', data)
     },
   })
 }
@@ -79,7 +87,16 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
     <UContainer class="pb-16">
       <div class="text-lg my-4">
         Writing for {{ getBriefDisplayDate(new Date().toISOString()) }}
+
+        <USkeleton v-if="lastWritingDatePending" class="h-4 w-48" />
+
+        <div v-else class="text-sm text-gray-600 dark:text-gray-400 h-4">
+          <template v-if="lastWritingTimeAgo"> Last entry was {{ lastWritingTimeAgo }} </template>
+          <template v-else> This is your first writing entry! </template>
+        </div>
       </div>
+
+      <div class="text-lg my-4" />
 
       <UForm :schema :state class="space-y-4" @submit="onFinishWriting">
         <UFormField name="category">
