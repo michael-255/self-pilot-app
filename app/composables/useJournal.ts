@@ -39,6 +39,28 @@ export default function useJournal() {
   const writingBody = useLocalStorage<string>('selfpilot-writing-body', '')
 
   /**
+   * Utility to get the word count and estimated reading time for a given set of texts.
+   */
+  const getWritingMetrics = (texts: string[]) => {
+    let wordCount = 0
+
+    // Calculate word count
+    const combined = texts.filter(Boolean).join(' ')
+    const characters = combined.length
+
+    if (combined) {
+      const segmenter = new Intl.Segmenter('en', { granularity: 'word' })
+      for (const segment of segmenter.segment(combined)) {
+        if (segment.isWordLike) wordCount++
+      }
+    }
+
+    // Calculate reading time assuming 200 words per minute
+    const readingTime = Math.max(0, Math.ceil(wordCount / 200))
+    return { wordCount, readingTime, characters }
+  }
+
+  /**
    * Searching writing entries with optional filters.
    */
   const useSearchWritingEntries = ({
@@ -202,6 +224,7 @@ export default function useJournal() {
     writingCategory,
     writingSubject,
     writingBody,
+    getWritingMetrics,
     useSearchWritingEntries,
     useGetWritingEntry,
     createWritingEntry,

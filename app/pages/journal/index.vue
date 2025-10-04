@@ -18,9 +18,16 @@ useSeoMeta({
 
 const modal = useOverlay().create(ConfirmModal)
 const logger = useLogger()
-const { writingCategory, writingSubject, writingBody, categories, createWritingEntry } =
-  useJournal()
+const {
+  writingCategory,
+  writingSubject,
+  writingBody,
+  categories,
+  createWritingEntry,
+  getWritingMetrics,
+} = useJournal()
 const bodyPlaceholder = getInspirationalMessage()
+const writingMetrics = computed(() => getWritingMetrics([state.subject, state.body]))
 
 const state = reactive({
   category: writingCategory,
@@ -98,13 +105,36 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
           <UTextarea
             v-model="state.body"
             :placeholder="bodyPlaceholder"
-            :rows="16"
+            :rows="20"
             class="w-full"
             size="xl"
           />
         </UFormField>
 
-        <div class="flex justify-end mt-6">
+        <UCard variant="soft">
+          <div class="flex justify-between">
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Characters</div>
+              <div class="text-2xl">
+                {{ writingMetrics.characters }}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Words</div>
+              <div class="text-2xl">
+                {{ writingMetrics.wordCount }}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Reading Time</div>
+              <div class="text-2xl">{{ writingMetrics.readingTime }} min</div>
+            </div>
+          </div>
+        </UCard>
+
+        <div class="flex justify-end mt-5">
           <UButton
             label="Finished Writing"
             icon="i-lucide-notebook-pen"
