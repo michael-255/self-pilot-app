@@ -6,7 +6,6 @@ export const useAuthStore = defineStore('auth', () => {
   const supabase = useSupabaseClient()
   const router = useRouter()
 
-  const isAuthInitialized = ref(false)
   const isLoggedIn = ref(false)
   const user = reactive({
     id: '',
@@ -24,7 +23,6 @@ export const useAuthStore = defineStore('auth', () => {
     logger.debug('Auth state changed', {
       user,
       isLoggedIn: isLoggedIn.value,
-      isAuthInitialized: isAuthInitialized.value,
     })
   })
 
@@ -39,12 +37,10 @@ export const useAuthStore = defineStore('auth', () => {
     user.name = data?.user?.user_metadata?.display_name || ''
 
     isLoggedIn.value = !!data.user
-    isAuthInitialized.value = true
 
     logger.debug('Fetched user', {
       user,
       isLoggedIn: isLoggedIn.value,
-      isAuthInitialized: isAuthInitialized.value,
     })
   }
 
@@ -61,5 +57,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   fetchUser() // Call on store init
 
-  return { user, isLoggedIn, isAuthInitialized, fetchUser, onLogout }
+  return { user, isLoggedIn, fetchUser, onLogout }
 })

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
+import ConfirmModal from '~/components/shared/ConfirmModal.vue'
 import { Constants } from '~/types/supabase'
 
 definePageMeta({
@@ -15,6 +16,7 @@ useSeoMeta({
   description,
 })
 
+const modal = useOverlay().create(ConfirmModal)
 const logger = useLogger()
 const { writingCategory, writingSubject, writingBody, categories, createWritingEntry } =
   useJournal()
@@ -37,21 +39,31 @@ const schema = z.object({
   body: z.string().max(MAX_JOURNAL_BODY, `Body cannot exceed ${MAX_JOURNAL_BODY} characters`),
 })
 
-const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
-  try {
-    await createWritingEntry({
-      category: payload.data.category,
-      subject: payload.data.subject,
-      body: payload.data.body,
-    })
+/**
+ * Show confirmation modal to finish the writing session and save it.
+ */
+const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
+  modal.open({
+    title: 'Finished Writing',
+    description: 'Are you ready to finish this writing session and save it?',
+    color: 'primary',
+    onConfirm: async () => {
+      try {
+        await createWritingEntry({
+          category: payload.data.category,
+          subject: payload.data.subject,
+          body: payload.data.body,
+        })
 
-    state.subject = ''
-    state.body = ''
+        state.subject = ''
+        state.body = ''
 
-    logger.info('Writing entry created')
-  } catch (error) {
-    logger.error('Error creating writing entry:', error)
-  }
+        logger.info('Writing entry finished and saved')
+      } catch (error) {
+        logger.error('Error creating writing entry:', error)
+      }
+    },
+  })
 }
 </script>
 
@@ -62,7 +74,7 @@ const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
         Writing for {{ getBriefDisplayDate(new Date().toISOString()) }}
       </div>
 
-      <UForm :schema :state class="space-y-4" @submit="onSubmit">
+      <UForm :schema :state class="space-y-4" @submit="onFinishWriting">
         <UFormField name="category">
           <USelect
             v-model="state.category"
@@ -94,14 +106,13 @@ const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
 
         <div class="flex justify-end mt-6">
           <UButton
+            label="Finished Writing"
             icon="i-lucide-notebook-pen"
             type="submit"
             color="primary"
             variant="solid"
             size="xl"
-          >
-            Finish Writing
-          </UButton>
+          />
         </div>
       </UForm>
     </UContainer>

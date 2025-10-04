@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import ConfirmModal from '~/components/shared/ConfirmModal.vue'
 import { localDatabase } from '~/utils/local-database'
 
-const open = ref(false)
-const isDevMode = import.meta.env.DEV
 const title = 'Settings'
 const description = 'Manage your profile and application logs'
 
@@ -12,10 +11,12 @@ useSeoMeta({
   description,
 })
 
+const modal = useOverlay().create(ConfirmModal)
 const route = useRoute()
 const router = useRouter()
 const logger = useLogger()
 const authStore = useAuthStore()
+const isDevMode = import.meta.env.DEV
 const logCounts = ref<{
   all: number
   debug: number
@@ -41,6 +42,27 @@ const subscription = localDatabase
 onUnmounted(() => {
   if (subscription) subscription.unsubscribe()
 })
+
+/**
+ * Opens the delete logs confirmation modal.
+ */
+const onDeleteLogs = () => {
+  modal.open({
+    title: 'Delete Logs',
+    description:
+      'Are you sure you want to delete all locally stored application logs? This action cannot be undone.',
+    color: 'error',
+    unlock: true,
+    onConfirm: async () => {
+      try {
+        await localDatabase.logs.clear()
+        logger.debug('Logs cleared')
+      } catch (error) {
+        logger.error('Error while clearing logs', error)
+      }
+    },
+  })
+}
 
 /**
  * Test function for the logger should only be available in dev mode.
@@ -139,27 +161,13 @@ const onTestLogger = () => {
           </div>
 
           <div>
-            <UModal v-model:open="open" title="Delete Logs" :ui="{ footer: 'justify-end' }">
-              <UButton color="error" icon="i-lucide-trash" size="lg" label="Delete Logs" />
-
-              <template #body>
-                Are you sure you want to delete all locally stored logs? This action cannot be
-                undone.
-              </template>
-
-              <template #footer="{ close }">
-                <UButton
-                  label="Confirm"
-                  color="error"
-                  @click="
-                    async () => {
-                      await localDatabase.logs.clear()
-                      close()
-                    }
-                  "
-                />
-              </template>
-            </UModal>
+            <UButton
+              color="error"
+              icon="i-lucide-trash"
+              size="lg"
+              label="Delete Logs"
+              @click="onDeleteLogs"
+            />
           </div>
 
           <div v-if="isDevMode">
