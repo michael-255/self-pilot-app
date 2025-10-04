@@ -3,6 +3,48 @@ import z from 'zod'
 export const appTitle = 'Self Pilot'
 export const appDescription = `${appTitle} is a collection of tools and mini-apps for day-to-day life.`
 
+export const shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+export const longDays = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+]
+
+export const shortMonths = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
+
+export const longMonths = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
 export const durationNames = z.enum([
   'Now',
   'One Second',
@@ -36,7 +78,6 @@ export const inspirationalMessages = [
   "You miss 100% of the shots you don't take.",
   'The only person you are destined to become is the person you decide to be.',
   'Go confidently in the direction of your dreams. Live the life you have imagined.',
-  'The best revenge is massive success.',
   "Don't watch the clock; do what it does. Keep going.",
   'Keep your face always toward the sunshine and shadows will fall behind you.',
   'The only way to achieve the impossible is to believe it is possible.',
@@ -46,4 +87,5 @@ export const inspirationalMessages = [
   'Success usually comes to those who are too busy to be looking for it.',
   "You can't cross the sea merely by standing and staring at the water.",
   'What you get by achieving your goals is not as important as what you become by achieving your goals.',
+  'Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.',
 ]

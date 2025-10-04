@@ -7,12 +7,40 @@ export default function useJournal() {
   const supabase = useSupabaseClient<Database>()
   const logger = useLogger()
 
-  const category = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
+  /**
+   * List of writing categories from the database enums.
+   */
+  const categories = Constants.api_journal.Enums.writing_category.flat()
+
+  /**
+   * User's selected search category, persisted in local storage.
+   */
+  const searchCategory = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
+    'selfpilot-search-category',
+    Constants.api_journal.Enums.writing_category[0],
+  )
+
+  /**
+   * User's selected writing category, persisted in local storage.
+   */
+  const writingCategory = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
     'selfpilot-writing-category',
     Constants.api_journal.Enums.writing_category[0],
   )
-  const categories = Constants.api_journal.Enums.writing_category.flat()
 
+  /**
+   * User's in-progress writing subject, persisted in local storage.
+   */
+  const writingSubject = useLocalStorage<string>('selfpilot-writing-subject', '')
+
+  /**
+   * User's in-progress writing body, persisted in local storage.
+   */
+  const writingBody = useLocalStorage<string>('selfpilot-writing-body', '')
+
+  /**
+   * Searching writing entries with optional filters.
+   */
   const useSearchWritingEntries = ({
     category,
     startDate,
@@ -53,6 +81,9 @@ export default function useJournal() {
     return { data, pending, error, refresh }
   }
 
+  /**
+   * Get a single writing entry by ID.
+   */
   const useGetWritingEntry = (id: string) => {
     const { data, pending, error, refresh } = useAsyncData(`writing_entry_${id}`, async () => {
       const { data, error } = await supabase
@@ -68,13 +99,16 @@ export default function useJournal() {
         })
       }
 
-      logger.debug(`Fetched writing entry:`, { data, id })
+      logger.debug(`Fetched writing entry:`, data)
       return data
     })
 
     return { data, pending, error, refresh }
   }
 
+  /**
+   * Create a new writing entry.
+   */
   const createWritingEntry = async ({
     category,
     subject,
@@ -105,6 +139,9 @@ export default function useJournal() {
     return data
   }
 
+  /**
+   * Update an existing writing entry.
+   */
   const updateWritingEntry = async ({
     id,
     category,
@@ -138,6 +175,9 @@ export default function useJournal() {
     return data
   }
 
+  /**
+   * Delete a writing entry by ID.
+   */
   const deleteWritingEntry = async (id: string) => {
     const { error } = await supabase
       .schema('api_journal')
@@ -152,13 +192,16 @@ export default function useJournal() {
       })
     }
 
-    logger.debug(`Deleted writing entry`, { id })
+    logger.debug(`Deleted writing entry`, id)
     return true
   }
 
   return {
-    category,
     categories,
+    searchCategory,
+    writingCategory,
+    writingSubject,
+    writingBody,
     useSearchWritingEntries,
     useGetWritingEntry,
     createWritingEntry,

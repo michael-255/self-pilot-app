@@ -7,16 +7,36 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- Use local storage to save categoryId, subject, and body of writing until saved to SQL
+- Build a modal component (for confirmations/deletes)?
 
-- `writing` - Home route, defaults to a writing inputs (new writing)
-  - Store `category`, `subject`, and `body` in Dexie (recallable, offline first)
-  - Push to SQL on save, but only clear Dexie after save is confirmed
-  - Have a random writing prompt that can be rotated through (build 100+ prompts using AI)
-  - Have a badge that lets you know how many writings you've done today/week/month/year/all time
-- `writing/read/:id` - read a specific writing
-- `writing/edit/:id` - edit a specific writing
-- `writings/search` - search writings
+- `/journal` - HOME (new writing entry)
+  - Writing prompt that can be rotated through (build 100+ prompts using AI for each category)
+  - Show stats (words, time to read)
+
+- `/journal/metrics` - METRICS (_review_)
+  - Show stats (words, time to read)
+  - Graph of writings over time (day/week/month/year)
+  - Most popular categories
+  - Average words per writing
+  - Average time to read per writing
+
+- `/journal/read/:id` - READ
+  - Use nice typography
+  - Show stats (words, time to read)
+  - `Edit` button (goto edit route)
+  - `Delete` button (ask for confirmation)
+
+- `/journal/edit/:id` - EDIT
+  - On update, goto `read` route with the id (replace?)
+  - `Read` button (goto read route)
+  - `Delete` button (ask for confirmation)
+
+- `/journal/search` - SEARCH **PRIORITY**
+  - Search by category, start date, end date, and search query
+  - list up to 20 results at a time
+  - Show stats on each result (words, time to read)
+  - `Load more results` button at the bottom
+  - each result should have a menu to `read`, `edit`, and `delete`
 
 ## Setup
 

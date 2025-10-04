@@ -1,50 +1,65 @@
 /**
- * Returns a formatted local display date string from a UTC date string.
- * @param utcDate UTC date string in ISO format
- * @returns `2024 Sep 1st, Sun 12:17 PM`
+ * Gets a random inspirational message from a predefined list in constants.
+ * @example
+ * "Keep pushing forward, no matter the obstacles."
  */
-export function localDisplayDate(utcDate: string): string {
+const getInspirationalMessage = () =>
+  inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]
+
+/**
+ * Returns the ordinal string for a given number (e.g., 1st, 2nd, 3rd, 4th, ...)
+ * @example
+ * "th"
+ */
+const getOrdinal = (n: number): string => {
+  if (n % 100 >= 11 && n % 100 <= 13) return 'th'
+  switch (n % 10) {
+    case 1:
+      return 'st'
+    case 2:
+      return 'nd'
+    case 3:
+      return 'rd'
+    default:
+      return 'th'
+  }
+}
+
+/**
+ * Return a brief display date for page headlines.
+ * @example
+ * "Friday, October 3rd"
+ */
+const getBriefDisplayDate = (utcDate: string): string => {
   if (!utcDate) return 'No Date'
 
   const dateObj = new Date(utcDate)
-
   if (isNaN(dateObj.getTime())) return 'Invalid Date'
 
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
-  const dayName = days[dateObj.getDay()]
-  const year = dateObj.getFullYear()
-  const monthName = months[dateObj.getMonth()]
-  const day = dateObj.getDate()
+  const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' })
+  const monthName = dateObj.toLocaleDateString('en-US', { month: 'long' })
+  const dayNumber = dateObj.getDate()
+  const daySuffix = getOrdinal(dayNumber)
 
-  // Get ordinal suffix
-  function ordinal(n: number) {
-    if (n > 3 && n < 21) return 'th'
-    switch (n % 10) {
-      case 1:
-        return 'st'
-      case 2:
-        return 'nd'
-      case 3:
-        return 'rd'
-      default:
-        return 'th'
-    }
-  }
-  const dayWithSuffix = `${day}${ordinal(day)}`
+  return `${dayName}, ${monthName} ${dayNumber}${daySuffix}`
+}
+
+/**
+ * Return a compact display date for tables.
+ * @example
+ * "2024 Sep 1st, Sun 12:17 PM"
+ */
+const getCompactDisplayDate = (utcDate: string): string => {
+  if (!utcDate) return 'No Date'
+
+  const dateObj = new Date(utcDate)
+  if (isNaN(dateObj.getTime())) return 'Invalid Date'
+
+  const year = dateObj.getFullYear()
+  const dayName = shortDays[dateObj.getDay()]
+  const monthName = shortMonths[dateObj.getMonth()]
+  const dayNumber = dateObj.getDate()
+  const daySuffix = getOrdinal(dayNumber)
 
   let hours = dateObj.getHours()
   const minutes = dateObj.getMinutes()
@@ -53,5 +68,7 @@ export function localDisplayDate(utcDate: string): string {
   if (hours === 0) hours = 12
   const minutesStr = minutes < 10 ? `0${minutes}` : `${minutes}`
 
-  return `${year} ${monthName} ${dayWithSuffix}, ${dayName} ${hours}:${minutesStr} ${ampm}`
+  return `${year} ${monthName} ${dayNumber}${daySuffix}, ${dayName} ${hours}:${minutesStr} ${ampm}`
 }
+
+export { getBriefDisplayDate, getCompactDisplayDate, getInspirationalMessage, getOrdinal }

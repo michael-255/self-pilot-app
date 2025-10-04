@@ -94,7 +94,7 @@ const columns: ColumnDef<AppLog>[] = [
     meta: {
       class: {
         th: 'text-left',
-        td: 'text-left font-mono text-xs',
+        td: 'text-left font-mono text-xs whitespace-pre-wrap',
       },
     },
   },

@@ -13,7 +13,7 @@ useSeoMeta({
   description,
 })
 
-const { category, categories, useSearchWritingEntries } = useJournal()
+const { searchCategory, categories, useSearchWritingEntries } = useJournal()
 const { data } = useSearchWritingEntries({
   query: 'entry',
   offset: 0,
@@ -35,7 +35,7 @@ const modelValue = shallowRef({
   <UPage>
     <UContainer class="pb-16">
       <USelect
-        v-model="category"
+        v-model="searchCategory"
         :items="categories"
         placeholder="Category"
         size="xl"

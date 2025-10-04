@@ -8,6 +8,13 @@ export default function useRouting() {
   const logger = useLogger()
 
   /**
+   * Current route ID parameter, or empty string if not present.
+   */
+  const routeId = Array.isArray(route.params.id)
+    ? (route.params.id[0] ?? '')
+    : (route.params.id ?? '')
+
+  /**
    * Go back if previous route state is part of the app history, otherwise go to root path.
    */
   const goBack = () => {
@@ -35,5 +42,5 @@ export default function useRouting() {
     router.push(to)
   }
 
-  return { goBack, goToWithRedirect }
+  return { routeId, goBack, goToWithRedirect }
 }

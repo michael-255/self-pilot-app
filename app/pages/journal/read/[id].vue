@@ -11,13 +11,8 @@ useSeoMeta({
   description,
 })
 
-const route = useRoute()
+const { routeId } = useRouting()
 const { useGetWritingEntry } = useJournal()
-
-const routeId = Array.isArray(route.params.id)
-  ? (route.params.id[0] ?? '')
-  : (route.params.id ?? '')
-
 const { data: entry } = useGetWritingEntry(routeId)
 </script>
 

@@ -16,42 +16,25 @@ useSeoMeta({
 })
 
 const logger = useLogger()
-const { category, categories, createWritingEntry } = useJournal()
+const { writingCategory, writingSubject, writingBody, categories, createWritingEntry } =
+  useJournal()
+const bodyPlaceholder = getInspirationalMessage()
 
 const state = reactive({
-  category,
-  subject: '',
-  body: '',
+  category: writingCategory,
+  subject: writingSubject,
+  body: writingBody,
 })
 
-function getDaySuffix(day: number) {
-  if (day >= 11 && day <= 13) return 'th'
-  switch (day % 10) {
-    case 1:
-      return 'st'
-    case 2:
-      return 'nd'
-    case 3:
-      return 'rd'
-    default:
-      return 'th'
-  }
-}
-
-const bodyPlaceholder =
-  inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]
-
-const today = new Date()
-const dayName = today.toLocaleDateString('en-US', { weekday: 'long' })
-const monthName = today.toLocaleDateString('en-US', { month: 'long' })
-const dayNumber = today.getDate()
-const daySuffix = getDaySuffix(dayNumber)
-const formattedDate = `${dayName}, ${monthName} ${dayNumber}${daySuffix}`
+const MAX_JOURNAL_SUBJECT = 100
+const MAX_JOURNAL_BODY = 30000
 
 const schema = z.object({
   category: z.enum(Constants.api_journal.Enums.writing_category),
-  subject: z.string().max(100, 'Subject cannot exceed 100 characters'),
-  body: z.string().max(30000, 'Body cannot exceed 30,000 characters'),
+  subject: z
+    .string()
+    .max(MAX_JOURNAL_SUBJECT, `Subject cannot exceed ${MAX_JOURNAL_SUBJECT} characters`),
+  body: z.string().max(MAX_JOURNAL_BODY, `Body cannot exceed ${MAX_JOURNAL_BODY} characters`),
 })
 
 const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
@@ -75,7 +58,9 @@ const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
 <template>
   <UPage>
     <UContainer class="pb-16">
-      <div class="text-lg my-4">Writing for {{ formattedDate }}</div>
+      <div class="text-lg my-4">
+        Writing for {{ getBriefDisplayDate(new Date().toISOString()) }}
+      </div>
 
       <UForm :schema :state class="space-y-4" @submit="onSubmit">
         <UFormField name="category">

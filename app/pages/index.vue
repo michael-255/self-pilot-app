@@ -34,7 +34,7 @@ const cards = [
 ]
 
 const title = 'Tools and apps for every day'
-const description = inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]
+const description = getInspirationalMessage()
 
 useSeoMeta({
   title,

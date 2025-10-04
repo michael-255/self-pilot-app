@@ -18,13 +18,12 @@ const supabase = useSupabaseClient()
 const authStore = useAuthStore()
 const loading = useLoadingIndicator()
 const userEmail = useLocalStorage<string>('selfpilot-user-email', '')
-const randomMessage =
-  inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]
+const message = getInspirationalMessage()
 const showPassword = ref(false)
 const errorMessage = ref('')
 
 const state = reactive({
-  email: userEmail.value,
+  email: userEmail.value, // Using by value so it doesn't update until form is submitted
   password: '',
 })
 
@@ -85,7 +84,7 @@ const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
     <div class="flex flex-col items-center space-y-3">
       <UIcon name="i-lucide-user" class="w-9 h-9" />
       <div class="text-2xl font-bold">Welcome</div>
-      <div class="text-gray-400 text-center">{{ randomMessage }}</div>
+      <div class="text-gray-400 text-center">{{ message }}</div>
     </div>
 
     <USeparator />
