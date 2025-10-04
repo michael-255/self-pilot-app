@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from '@nuxt/ui'
+import z from 'zod'
+import { Constants } from '~/types/supabase'
+
 definePageMeta({
   layout: 'journal',
 })
@@ -11,11 +15,11 @@ useSeoMeta({
   description,
 })
 
-// TODO: useJournal
-const categories = ['Personal', 'Work', 'Ideas', 'Gratitude', 'Goals', 'Other']
+const logger = useLogger()
+const { category, categories, createWritingEntry } = useJournal()
 
-const form = reactive({
-  category: '',
+const state = reactive({
+  category,
   subject: '',
   body: '',
 })
@@ -43,6 +47,29 @@ const monthName = today.toLocaleDateString('en-US', { month: 'long' })
 const dayNumber = today.getDate()
 const daySuffix = getDaySuffix(dayNumber)
 const formattedDate = `${dayName}, ${monthName} ${dayNumber}${daySuffix}`
+
+const schema = z.object({
+  category: z.enum(Constants.api_journal.Enums.writing_category),
+  subject: z.string().max(100, 'Subject cannot exceed 100 characters'),
+  body: z.string().max(30000, 'Body cannot exceed 30,000 characters'),
+})
+
+const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
+  try {
+    await createWritingEntry({
+      category: payload.data.category,
+      subject: payload.data.subject,
+      body: payload.data.body,
+    })
+
+    state.subject = ''
+    state.body = ''
+
+    logger.info('Writing entry created')
+  } catch (error) {
+    logger.error('Error creating writing entry:', error)
+  }
+}
 </script>
 
 <template>
@@ -50,14 +77,20 @@ const formattedDate = `${dayName}, ${monthName} ${dayNumber}${daySuffix}`
     <UContainer class="pb-16">
       <div class="text-lg my-4">Writing for {{ formattedDate }}</div>
 
-      <UForm class="space-y-4">
+      <UForm :schema :state class="space-y-4" @submit="onSubmit">
         <UFormField name="category">
-          <USelect v-model="form.category" :items="categories" placeholder="Category" size="xl" />
+          <USelect
+            v-model="state.category"
+            :items="categories"
+            placeholder="Category"
+            size="xl"
+            class="w-48"
+          />
         </UFormField>
 
         <UFormField name="subject" class="w-full">
           <UInput
-            v-model="form.subject"
+            v-model="state.subject"
             placeholder="What are you writing about?"
             class="w-full"
             size="xl"
@@ -66,26 +99,26 @@ const formattedDate = `${dayName}, ${monthName} ${dayNumber}${daySuffix}`
 
         <UFormField name="body" class="w-full">
           <UTextarea
-            v-model="form.body"
+            v-model="state.body"
             :placeholder="bodyPlaceholder"
             :rows="16"
             class="w-full"
             size="xl"
           />
         </UFormField>
-      </UForm>
 
-      <div class="flex justify-end mt-6">
-        <UButton
-          icon="i-lucide-notebook-pen"
-          type="submit"
-          color="primary"
-          variant="solid"
-          size="xl"
-        >
-          Finish Writing
-        </UButton>
-      </div>
+        <div class="flex justify-end mt-6">
+          <UButton
+            icon="i-lucide-notebook-pen"
+            type="submit"
+            color="primary"
+            variant="solid"
+            size="xl"
+          >
+            Finish Writing
+          </UButton>
+        </div>
+      </UForm>
     </UContainer>
   </UPage>
 </template>

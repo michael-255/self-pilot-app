@@ -1,102 +1,168 @@
-/**
- * Composable for journal functionality using Supabase RPC and Nuxt useAsyncData.
- */
-import type { Database } from '~/types/supabase'
+import { Constants, type Database } from '~/types/supabase'
 
+/**
+ * Composable for journal functionality using Supabase.
+ */
 export default function useJournal() {
   const supabase = useSupabaseClient<Database>()
   const logger = useLogger()
 
-  // Fetch categories (view)
-  const fetchCategories = async () => {
-    const { data, error } = await supabase
-      .schema('api_journal')
-      .from('writing_categories_view')
-      .select('*')
+  const category = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
+    'selfpilot-writing-category',
+    Constants.api_journal.Enums.writing_category[0],
+  )
+  const categories = Constants.api_journal.Enums.writing_category.flat()
 
-    if (error) {
-      logger.error('Error fetching journal categories:', error)
-      throw error
-    }
+  const useSearchWritingEntries = ({
+    category,
+    startDate,
+    endDate,
+    query,
+    offset,
+  }: {
+    category?: Database['api_journal']['Enums']['writing_category']
+    startDate?: string
+    endDate?: string
+    query?: string
+    offset?: number
+  }) => {
+    const { data, pending, error, refresh } = useAsyncData(
+      `writing_entries_${JSON.stringify({ category, startDate, endDate, query, offset })}`,
+      async () => {
+        const { data, error } = await supabase.schema('api_journal').rpc('search_writing_entries', {
+          in_category: category,
+          in_start_date: startDate,
+          in_end_date: endDate,
+          in_query: query,
+          in_offset: offset,
+        })
 
-    logger.debug('Fetched journal categories:', data)
-    return data
+        if (error) {
+          logger.error('Error searching writing entries:', error)
+          showError({
+            statusCode: 500,
+            statusMessage: 'Internal Server Error',
+          })
+        }
+
+        logger.debug('Searched writing entries:', data)
+        return data
+      },
+    )
+
+    return { data, pending, error, refresh }
   }
 
-  // Search entries (RPC)
-  const searchEntries = async (params = {}) => {
-    const { data, error } = await supabase
-      .schema('api_journal')
-      .rpc('search_writing_entries', params)
-    if (error) throw error
-    return data
+  const useGetWritingEntry = (id: string) => {
+    const { data, pending, error, refresh } = useAsyncData(`writing_entry_${id}`, async () => {
+      const { data, error } = await supabase
+        .schema('api_journal')
+        .rpc('get_writing_entry', { in_id: id })
+        .single()
+
+      if (error) {
+        logger.error('Error fetching writing entry:', error)
+        showError({
+          statusCode: 500,
+          statusMessage: 'Internal Server Error',
+        })
+      }
+
+      logger.debug(`Fetched writing entry:`, { data, id })
+      return data
+    })
+
+    return { data, pending, error, refresh }
   }
 
-  // Get single entry (RPC)
-  const getEntry = async (id: string) => {
-    const { data, error } = await supabase
-      .schema('api_journal')
-      .rpc('get_writing_entry', { in_id: id })
-    if (error) throw error
-    return data?.[0] || null
-  }
-
-  // Create entry (RPC)
-  const createEntry = async ({
-    category_id,
+  const createWritingEntry = async ({
+    category,
     subject,
     body,
   }: {
-    category_id: number
+    category: Database['api_journal']['Enums']['writing_category']
     subject: string
     body: string
   }) => {
-    const { data, error } = await supabase.schema('api_journal').rpc('create_writing_entry', {
-      in_category_id: category_id,
-      in_subject: subject,
-      in_body: body,
-    })
-    if (error) throw error
-    return data?.[0] || null
+    const { data, error } = await supabase
+      .schema('api_journal')
+      .rpc('create_writing_entry', {
+        in_category: category,
+        in_subject: subject,
+        in_body: body,
+      })
+      .single()
+
+    if (error) {
+      logger.error('Error creating writing entry:', error)
+      showError({
+        statusCode: 500,
+        statusMessage: 'Internal Server Error',
+      })
+    }
+
+    logger.debug('Created writing entry:', data)
+    return data
   }
 
-  // Update entry (RPC)
-  const updateEntry = async ({
+  const updateWritingEntry = async ({
     id,
-    category_id,
+    category,
     subject,
     body,
   }: {
     id: string
-    category_id: number
+    category: Database['api_journal']['Enums']['writing_category']
     subject: string
     body: string
   }) => {
-    const { data, error } = await supabase.schema('api_journal').rpc('update_writing_entry', {
-      in_id: id,
-      in_category_id: category_id,
-      in_subject: subject,
-      in_body: body,
-    })
-    if (error) throw error
-    return data?.[0] || null
+    const { data, error } = await supabase
+      .schema('api_journal')
+      .rpc('update_writing_entry', {
+        in_id: id,
+        in_category: category,
+        in_subject: subject,
+        in_body: body,
+      })
+      .single()
+
+    if (error) {
+      logger.error('Error updating writing entry:', error)
+      showError({
+        statusCode: 500,
+        statusMessage: 'Internal Server Error',
+      })
+    }
+
+    logger.debug('Updated writing entry:', data)
+    return data
   }
 
-  // Delete entry (RPC)
-  const deleteEntry = async (id: string) => {
+  const deleteWritingEntry = async (id: string) => {
     const { error } = await supabase
       .schema('api_journal')
       .rpc('delete_writing_entry', { in_id: id })
-    if (error) throw error
+      .single()
+
+    if (error) {
+      logger.error('Error deleting writing entry:', error)
+      showError({
+        statusCode: 500,
+        statusMessage: 'Internal Server Error',
+      })
+    }
+
+    logger.debug(`Deleted writing entry`, { id })
     return true
   }
 
   return {
-    fetchCategories,
-    searchEntries,
-    getEntry,
-    createEntry,
-    updateEntry,
-    deleteEntry,
+    category,
+    categories,
+    useSearchWritingEntries,
+    useGetWritingEntry,
+    createWritingEntry,
+    updateWritingEntry,
+    deleteWritingEntry,
   }
 }

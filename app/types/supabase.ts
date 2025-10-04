@@ -12,31 +12,18 @@ export type Database = {
       [_ in never]: never
     }
     Views: {
-      writing_categories_view: {
-        Row: {
-          id: number | null
-          name: string | null
-          slug: string | null
-        }
-        Insert: {
-          id?: number | null
-          name?: string | null
-          slug?: string | null
-        }
-        Update: {
-          id?: number | null
-          name?: string | null
-          slug?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       create_writing_entry: {
-        Args: { in_body: string; in_category_id: number; in_subject: string }
+        Args: {
+          in_body: string
+          in_category: Database["api_journal"]["Enums"]["writing_category"]
+          in_subject: string
+        }
         Returns: {
           body: string
-          category_id: number
+          category: Database["api_journal"]["Enums"]["writing_category"]
           created_at: string
           id: string
           subject: string
@@ -51,7 +38,7 @@ export type Database = {
         Args: { in_id: string }
         Returns: {
           body: string
-          category_id: number
+          category: Database["api_journal"]["Enums"]["writing_category"]
           created_at: string
           id: string
           subject: string
@@ -60,7 +47,7 @@ export type Database = {
       }
       search_writing_entries: {
         Args: {
-          in_category_id?: number
+          in_category?: Database["api_journal"]["Enums"]["writing_category"]
           in_end_date?: string
           in_offset?: number
           in_query?: string
@@ -68,7 +55,7 @@ export type Database = {
         }
         Returns: {
           body: string
-          category_id: number
+          category: Database["api_journal"]["Enums"]["writing_category"]
           created_at: string
           id: string
           rank: number
@@ -79,13 +66,13 @@ export type Database = {
       update_writing_entry: {
         Args: {
           in_body?: string
-          in_category_id?: number
+          in_category?: Database["api_journal"]["Enums"]["writing_category"]
           in_id: string
           in_subject?: string
         }
         Returns: {
           body: string
-          category_id: number
+          category: Database["api_journal"]["Enums"]["writing_category"]
           created_at: string
           id: string
           subject: string
@@ -94,7 +81,14 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      writing_category:
+        | "Journaling"
+        | "Weekly Review"
+        | "Yearly Review"
+        | "Goals & Planning"
+        | "Brainstorming"
+        | "Creative"
+        | "Other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -238,7 +232,17 @@ export type CompositeTypes<
 
 export const Constants = {
   api_journal: {
-    Enums: {},
+    Enums: {
+      writing_category: [
+        "Journaling",
+        "Weekly Review",
+        "Yearly Review",
+        "Goals & Planning",
+        "Brainstorming",
+        "Creative",
+        "Other",
+      ],
+    },
   },
   public: {
     Enums: {},

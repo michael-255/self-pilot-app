@@ -4,10 +4,12 @@ const route = useRoute()
 const items = computed(() => [
   {
     label: 'Writing',
-    active: route.path.startsWith('/journal'),
+    to: '/journal',
+    active: route.path === '/journal',
   },
   {
     label: 'Search',
+    to: '/journal/search',
   },
 ])
 </script>

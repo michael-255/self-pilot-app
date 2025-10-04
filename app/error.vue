@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
-const router = useRouter()
+const route = useRoute()
 const logger = useLogger()
 
 const props = defineProps({
@@ -29,19 +29,26 @@ useSeoMeta({
   <div>
     <UHeader :toggle="false">
       <template #left>
-        <NuxtLink to="/">
-          <div class="text-2xl font-bold">Self Pilot</div>
-        </NuxtLink>
+        <NuxtLink to="/"> <div class="text-2xl font-bold">Self Pilot</div> </NuxtLink>
       </template>
 
       <template #right>
         <UColorModeButton />
 
         <UButton
-          label="Settings"
-          variant="outline"
+          v-if="!route.path.startsWith('/settings')"
+          variant="ghost"
           color="neutral"
-          @click="router.push('/settings')"
+          icon="i-lucide-settings"
+          to="/settings"
+        />
+
+        <UButton
+          v-if="route.path.startsWith('/settings')"
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-x"
+          to="/"
         />
       </template>
     </UHeader>

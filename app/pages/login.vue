@@ -17,17 +17,18 @@ const logger = useLogger()
 const supabase = useSupabaseClient()
 const authStore = useAuthStore()
 const loading = useLoadingIndicator()
-const userEmail = useLocalStorage('user-email', '')
+const userEmail = useLocalStorage<string>('selfpilot-user-email', '')
 const randomMessage =
   inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]
 const showPassword = ref(false)
-const form = reactive({
+const errorMessage = ref('')
+
+const state = reactive({
   email: userEmail.value,
   password: '',
 })
-const errorMessage = ref('')
 
-const authSchema = z.object({
+const schema = z.object({
   email: z.email('Invalid email'),
   password: z
     .string()
@@ -37,15 +38,13 @@ const authSchema = z.object({
     .optional(),
 })
 
-type AuthSchema = z.output<typeof authSchema>
-
 onMounted(() => {
   if (authStore.isLoggedIn) {
     router.replace('/')
   }
 })
 
-const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
+const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
   try {
     loading.start({ force: true })
     errorMessage.value = ''
@@ -74,7 +73,7 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
       errorMessage.value = 'Sign in failed. Please try again.'
     }
 
-    form.password = ''
+    state.password = ''
   } finally {
     loading.finish({ force: true })
   }
@@ -82,7 +81,7 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
 </script>
 
 <template>
-  <UForm :schema="authSchema" :state="form" class="space-y-6" @submit="onSubmit">
+  <UForm :schema :state class="space-y-6" @submit="onSubmit">
     <div class="flex flex-col items-center space-y-3">
       <UIcon name="i-lucide-user" class="w-9 h-9" />
       <div class="text-2xl font-bold">Welcome</div>
@@ -92,12 +91,12 @@ const onSubmit = async (payload: FormSubmitEvent<AuthSchema>) => {
     <USeparator />
 
     <UFormField label="Email" name="email">
-      <UInput v-model="form.email" class="w-full" :disabled="loading.isLoading.value" />
+      <UInput v-model="state.email" class="w-full" :disabled="loading.isLoading.value" />
     </UFormField>
 
     <UFormField label="Password" name="password">
       <UInput
-        v-model="form.password"
+        v-model="state.password"
         :type="showPassword ? 'text' : 'password'"
         class="w-full"
         :disabled="loading.isLoading.value"

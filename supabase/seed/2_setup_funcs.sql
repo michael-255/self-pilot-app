@@ -10,35 +10,30 @@ AS $$
 DECLARE
   a_user_id UUID;
   b_user_id UUID;
-  category_id_1 INTEGER;
-  category_id_2 INTEGER;
 BEGIN
   a_user_id := seeding.create_user('a@a.com', 'selfpilot', 'Tester');
   b_user_id := seeding.create_user('b@b.com', 'selfpilot', '');
 
-  SELECT id INTO category_id_1 FROM app_journal.writing_categories WHERE slug = 'journaling' LIMIT 1;
-  SELECT id INTO category_id_2 FROM app_journal.writing_categories WHERE slug = 'creative' LIMIT 1;
-
   -- Journal Seeding
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'My first entry', 'This is my first journal entry.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'My second entry', 'This is my second journal entry.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'A creative thought', 'Once upon a time...');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Another idea', 'The quick brown fox jumps over the lazy dog.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Reflections', 'Today I learned something new.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Inspiration', 'Creativity is intelligence having fun.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Gratitude', 'I am grateful for the little things.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Dreams', 'Last night I dreamed of flying.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Goals', 'My goal is to write daily.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Imagination', 'What if we could live on Mars?');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Mindfulness', 'Being present in the moment is key.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Storytelling', 'Every person has a unique story to tell.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Challenges', 'Overcoming obstacles makes us stronger.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Adventure', 'Exploring new places is exciting.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Happiness', 'Happiness is a choice we make daily.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Curiosity', 'Curiosity drives innovation and discovery.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Learning', 'Every day is an opportunity to learn something new.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Creativity', 'Creativity is the power to connect the seemingly unconnected.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_1, 'Wellness', 'Taking care of my mind and body is essential.');
-  CALL seeding.create_writing_entry(a_user_id, category_id_2, 'Innovation', 'Innovation starts with a single idea.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'My first entry', 'This is my first journal entry.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'My second entry', 'This is my second journal entry.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'A creative thought', 'Once upon a time...');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Another idea', 'The quick brown fox jumps over the lazy dog.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Reflections', 'Today I learned something new.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Inspiration', 'Creativity is intelligence having fun.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Gratitude', 'I am grateful for the little things.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Dreams', 'Last night I dreamed of flying.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Goals', 'My goal is to write daily.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Imagination', 'What if we could live on Mars?');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Mindfulness', 'Being present in the moment is key.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Storytelling', 'Every person has a unique story to tell.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Challenges', 'Overcoming obstacles makes us stronger.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Adventure', 'Exploring new places is exciting.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Happiness', 'Happiness is a choice we make daily.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Curiosity', 'Curiosity drives innovation and discovery.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Learning', 'Every day is an opportunity to learn something new.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Creativity', 'Creativity is the power to connect the seemingly unconnected.');
+  CALL seeding.create_writing_entry(a_user_id, 'Journaling'::api_journal.writing_category, 'Wellness', 'Taking care of my mind and body is essential.');
+  CALL seeding.create_writing_entry(a_user_id, 'Creative'::api_journal.writing_category, 'Innovation', 'Innovation starts with a single idea.');
 END;
 $$;
