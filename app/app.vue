@@ -20,10 +20,23 @@ useSeoMeta({
   titleTemplate: 'Self Pilot - %s',
 })
 
+const logger = useLogger()
 const showScrollTop = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
+
+  try {
+    const logsDeleted = await localDatabase.deleteExpiredLogs()
+
+    if (logsDeleted > 0) {
+      logger.debug('Expired logs deleted', logsDeleted)
+    } else {
+      logger.debug('No expired logs to delete')
+    }
+  } catch (error) {
+    logger.error('Error deleting expired logs', error)
+  }
 })
 
 onUnmounted(() => {
