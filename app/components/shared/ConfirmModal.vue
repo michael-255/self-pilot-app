@@ -43,6 +43,7 @@ const isUnlocked = ref(!props.unlock)
       <UButton
         :label
         :color
+        :variant="!isUnlocked ? 'soft' : 'solid'"
         :disabled="!isUnlocked"
         @click="
           async () => {
