@@ -22,12 +22,7 @@ concurrency:
 
 jobs:
   deploy_github_pages:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [22]
+    runs-on: ubuntu-latest
 
     environment:
       name: github-pages
@@ -47,7 +42,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
