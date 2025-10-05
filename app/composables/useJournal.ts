@@ -2,7 +2,9 @@ import type { PostgrestError } from '@supabase/supabase-js'
 import { Constants, type Database } from '~/types/supabase'
 
 /**
- * Composable for journal functionality using Supabase.
+ * Composable for journal functionality using Supabase. Having almost all RPCs return tables, which
+ * requires single return functions to process the data with `data[0]`. Using single and maybeSingle
+ * was causing 406 status errors.
  */
 export default function useJournal() {
   const supabase = useSupabaseClient<Database>()
@@ -84,7 +86,9 @@ export default function useJournal() {
 
       if (error) {
         useError.value = error
+        logger.error('Error fetching last writing entry', error)
       }
+
       if (data && data[0]) {
         const entry = data[0]
         const metrics = getWritingMetrics(entry.body || '')
@@ -95,8 +99,9 @@ export default function useJournal() {
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Fetched last writing entry`, { id: entry.id })
+        logger.debug(`Fetched last writing entry`, computedData)
       }
+
       usePending.value = false
     }
 
@@ -150,8 +155,16 @@ export default function useJournal() {
 
       if (error) {
         useError.value = error
-        useData.value = null
+        logger.error('Error searching writing entries', {
+          error,
+          category,
+          startDate,
+          endDate,
+          query,
+          offset,
+        })
       }
+
       if (data) {
         useData.value = data.map((entry) => {
           const metrics = getWritingMetrics(entry.body || '')
@@ -163,14 +176,15 @@ export default function useJournal() {
           }
         })
         logger.debug(`Searched writing entries`, {
+          data,
           category,
           startDate,
           endDate,
           query,
           offset,
-          ids: [...data.map((d) => d.id)],
         })
       }
+
       usePending.value = false
     }
 
@@ -205,23 +219,25 @@ export default function useJournal() {
       const { data, error } = await supabase
         .schema('api_journal')
         .rpc('get_writing_entry', { in_id: id })
-        .maybeSingle()
 
       if (error) {
         useError.value = error
-        useData.value = null
+        logger.error('Error fetching writing entry', { error, id })
       }
-      if (data) {
-        const metrics = getWritingMetrics(data.body || '')
-        const timeAgo = useTimeAgoIntl(data.created_at).value
+
+      if (data && data[0]) {
+        const entry = data[0]
+        const metrics = getWritingMetrics(entry.body || '')
+        const timeAgo = useTimeAgoIntl(entry.created_at || '').value
         const computedData = {
-          ...data,
+          ...entry,
           ...metrics,
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Fetched writing entry`, { id })
+        logger.debug(`Fetched writing entry`, computedData)
       }
+
       usePending.value = false
     }
 
@@ -261,30 +277,30 @@ export default function useJournal() {
       useError.value = null
       useData.value = null
 
-      const { data, error } = await supabase
-        .schema('api_journal')
-        .rpc('create_writing_entry', {
-          in_category: category,
-          in_subject: subject,
-          in_body: body,
-        })
-        .single()
+      const { data, error } = await supabase.schema('api_journal').rpc('create_writing_entry', {
+        in_category: category,
+        in_subject: subject,
+        in_body: body,
+      })
 
       if (error) {
         useError.value = error
-        useData.value = null
+        logger.error('Error creating writing entry', { error, category, subject, body })
       }
-      if (data) {
-        const metrics = getWritingMetrics(data.body || '')
-        const timeAgo = useTimeAgoIntl(data.created_at).value
+
+      if (data && data[0]) {
+        const entry = data[0]
+        const metrics = getWritingMetrics(entry.body || '')
+        const timeAgo = useTimeAgoIntl(entry.created_at || '').value
         const computedData = {
-          ...data,
+          ...entry,
           ...metrics,
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Created writing entry`, { id: data.id })
+        logger.debug(`Created writing entry`, { data: computedData, category, subject, body })
       }
+
       usePending.value = false
     }
 
@@ -326,31 +342,31 @@ export default function useJournal() {
       useError.value = null
       useData.value = null
 
-      const { data, error } = await supabase
-        .schema('api_journal')
-        .rpc('update_writing_entry', {
-          in_id: id,
-          in_category: category,
-          in_subject: subject,
-          in_body: body,
-        })
-        .single()
+      const { data, error } = await supabase.schema('api_journal').rpc('update_writing_entry', {
+        in_id: id,
+        in_category: category,
+        in_subject: subject,
+        in_body: body,
+      })
 
       if (error) {
         useError.value = error
-        useData.value = null
+        logger.error('Error updating writing entry', { error, id, category, subject, body })
       }
-      if (data) {
-        const metrics = getWritingMetrics(data.body || '')
-        const timeAgo = useTimeAgoIntl(data.created_at).value
+
+      if (data && data[0]) {
+        const entry = data[0]
+        const metrics = getWritingMetrics(entry.body || '')
+        const timeAgo = useTimeAgoIntl(entry.created_at || '').value
         const computedData = {
-          ...data,
+          ...entry,
           ...metrics,
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Updated writing entry`, { id })
+        logger.debug(`Updated writing entry`, { data: computedData, id, category, subject, body })
       }
+
       usePending.value = false
     }
 
@@ -382,13 +398,17 @@ export default function useJournal() {
         .schema('api_journal')
         .rpc('delete_writing_entry', { in_id: id })
 
+      // RPC returns void, so if there is no error, we assume success
       if (error) {
         useError.value = error
-        useData.value = null
+        logger.error('Error deleting writing entry', { error, id })
       } else {
+        // Success means it completed and returns a true value for data
+        // This would also return true if the entry did not exist
         useData.value = true
-        logger.debug(`Deleted writing entry`, { id })
+        logger.debug(`Deleted writing entry (if exists)`, { id })
       }
+
       usePending.value = false
     }
 
