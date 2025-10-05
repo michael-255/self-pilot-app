@@ -1,3 +1,6 @@
+// Specifying the URL for GitHub Pages deployment
+const pagesUrl = '/self-pilot-app/'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
@@ -6,9 +9,28 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@vueuse/nuxt',
     '@pinia/nuxt',
-    '@vueuse/nuxt',
     '@nuxtjs/supabase',
+    '@vite-pwa/nuxt',
   ],
+
+  pwa: {
+    manifest: {
+      name: 'Self Pilot',
+      short_name: 'Self Pilot',
+      start_url: pagesUrl,
+      display: 'standalone',
+      theme_color: '#1976d2',
+      background_color: 'black',
+      icons: [
+        { src: `${pagesUrl}icon-192x192.png`, sizes: '192x192', type: 'image/png' },
+        { src: `${pagesUrl}icon-512x512.png`, sizes: '512x512', type: 'image/png' },
+      ],
+    },
+    registerType: 'autoUpdate',
+    workbox: {
+      // Not using ATM
+    },
+  },
 
   ssr: false,
 
@@ -16,7 +38,7 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
-  app: { baseURL: '/self-pilot-app/' },
+  app: { baseURL: pagesUrl },
 
   css: ['~/assets/css/main.css'],
 
