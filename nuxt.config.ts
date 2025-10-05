@@ -20,7 +20,7 @@ export default defineNuxtConfig({
       short_name: 'Self Pilot',
       start_url: pagesUrl,
       display: 'standalone',
-      theme_color: '#1976d2',
+      theme_color: '#020618',
       background_color: 'black',
       icons: [
         { src: `icon-192x192.png`, sizes: '192x192', type: 'image/png' },

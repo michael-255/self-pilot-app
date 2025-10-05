@@ -4,13 +4,30 @@ import { onMounted, onUnmounted, ref } from 'vue'
 const colorMode = useColorMode()
 const color = computed(() => (colorMode.value === 'dark' ? '#020618' : 'white'))
 
+const config = useRuntimeConfig()
+const baseUrl = config.app.baseURL || ''
+
 useHead({
   meta: [
     { charset: 'utf-8' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { name: 'background-color', content: 'black' },
     { key: 'theme-color', name: 'theme-color', content: color },
   ],
-  link: [{ rel: 'icon', href: '/favicon.ico' }],
+  link: [
+    { rel: 'icon', href: `${baseUrl}favicon.ico` },
+    { rel: 'icon', type: 'image/svg+xml', href: `${baseUrl}favicon.svg` },
+    { rel: 'manifest', href: `${baseUrl}manifest.webmanifest` },
+    {
+      rel: 'apple-touch-icon',
+      href: `${baseUrl}apple-touch-icon.png`,
+      sizes: '180x180',
+      type: 'image/png',
+    },
+    { rel: 'icon', href: `${baseUrl}favicon-96x96.png`, sizes: '96x96', type: 'image/png' },
+    { rel: 'icon', href: `${baseUrl}icon-192x192.png`, sizes: '192x192', type: 'image/png' },
+    { rel: 'icon', href: `${baseUrl}icon-512x512.png`, sizes: '512x512', type: 'image/png' },
+  ],
   htmlAttrs: {
     lang: 'en',
   },

@@ -82,7 +82,7 @@ export default function useJournal() {
 
       const { data, error } = await supabase
         .schema('api_journal')
-        .rpc('get_last_writing_entry')
+        .rpc('get_last_writing_entry', {})
         .single()
 
       if (error) {
