@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     },
     registerType: 'autoUpdate',
     workbox: {
-      // Not using ATM
+      navigateFallback: '/self-pilot-app/index.html', // To stop non-precached-urls errors
     },
   },
 
@@ -52,7 +52,7 @@ export default defineNuxtConfig({
   nitro: { preset: 'static' },
 
   supabase: {
-    redirect: true, // To login page if not signed in
+    redirect: false, // Custom middleware will handle auth redirects
     url: process.env.NUXT_PUBLIC_SUPABASE_URL,
     key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
   },

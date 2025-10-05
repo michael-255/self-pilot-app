@@ -83,7 +83,7 @@ export default function useJournal() {
       const { data, error } = await supabase
         .schema('api_journal')
         .rpc('get_last_writing_entry', {})
-        .single()
+        .maybeSingle()
 
       if (error) {
         useError.value = error
@@ -208,7 +208,7 @@ export default function useJournal() {
       const { data, error } = await supabase
         .schema('api_journal')
         .rpc('get_writing_entry', { in_id: id })
-        .single()
+        .maybeSingle()
 
       if (error) {
         useError.value = error
@@ -384,7 +384,6 @@ export default function useJournal() {
       const { error } = await supabase
         .schema('api_journal')
         .rpc('delete_writing_entry', { in_id: id })
-        .single()
 
       if (error) {
         useError.value = error

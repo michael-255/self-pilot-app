@@ -13,10 +13,8 @@ useSeoMeta({
 })
 
 const route = useRoute()
-const router = useRouter()
 const logger = useLogger()
 const supabase = useSupabaseClient<Database>()
-const authStore = useAuthStore()
 const loading = useLoadingIndicator()
 const userEmail = useLocalStorage<string>('selfpilot-user-email', '')
 const message = getInspirationalMessage()
@@ -36,12 +34,6 @@ const schema = z.object({
     .default('')
     .refine((val) => val, { message: 'Password is required' })
     .optional(),
-})
-
-onMounted(() => {
-  if (authStore.isLoggedIn) {
-    router.replace('/')
-  }
 })
 
 const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
@@ -74,7 +66,7 @@ const onSubmit = async (payload: FormSubmitEvent<z.output<typeof schema>>) => {
     : route.query.redirect
 
   logger.info('Sign in successful', { email: payload.data.email })
-  await router.replace(redirectPath || '/')
+  await navigateTo(redirectPath || '/')
   loading.finish({ force: true })
 }
 </script>

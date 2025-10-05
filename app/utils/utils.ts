@@ -1,4 +1,14 @@
 /**
+ * Utility functions for normalizing route paths.
+ * @example
+ * normalizePath('/journal/') // returns '/journal'
+ * normalizePath('/journal')  // returns '/journal'
+ */
+function normalizePath(path: string) {
+  return path.replace(/\/+$/, '')
+}
+
+/**
  * Gets a random inspirational message from a predefined list in constants.
  * @example
  * "Keep pushing forward, no matter the obstacles."
@@ -71,4 +81,10 @@ const getCompactDisplayDate = (utcDate: string): string => {
   return `${year} ${monthName} ${dayNumber}${daySuffix}, ${dayName} ${hours}:${minutesStr} ${ampm}`
 }
 
-export { getBriefDisplayDate, getCompactDisplayDate, getInspirationalMessage, getOrdinal }
+export {
+  getBriefDisplayDate,
+  getCompactDisplayDate,
+  getInspirationalMessage,
+  getOrdinal,
+  normalizePath,
+}

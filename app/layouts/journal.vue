@@ -5,15 +5,17 @@ const items = computed(() => [
   {
     label: 'Writing',
     to: '/journal',
-    active: route.path === '/journal',
+    active: normalizePath(route.path) === normalizePath('/journal'),
   },
   {
     label: 'Search',
     to: '/journal/search',
+    active: normalizePath(route.path) === normalizePath('/journal/search'),
   },
   {
     label: 'Metrics',
     to: '/journal/metrics',
+    active: normalizePath(route.path) === normalizePath('/journal/metrics'),
   },
 ])
 </script>
