@@ -80,19 +80,18 @@ export default function useJournal() {
       useError.value = null
       useData.value = null
 
-      const { data, error } = await supabase
+      const { data: originalData, error } = await supabase
         .schema('api_journal')
         .rpc('get_last_writing_entry')
-        .limit(1)
-        .maybeSingle()
 
       if (error) {
         useError.value = error
         useData.value = null
       }
-      if (data) {
+      if (originalData) {
+        const data = originalData[0] as LastWritingEntry
         const metrics = getWritingMetrics(data.body || '')
-        const timeAgo = useTimeAgoIntl(data.created_at).value
+        const timeAgo = useTimeAgoIntl(data.created_at || '').value
         const computedData = {
           ...data,
           ...metrics,
