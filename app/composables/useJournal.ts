@@ -80,25 +80,22 @@ export default function useJournal() {
       useError.value = null
       useData.value = null
 
-      const { data: originalData, error } = await supabase
-        .schema('api_journal')
-        .rpc('get_last_writing_entry')
+      const { data, error } = await supabase.schema('api_journal').rpc('get_last_writing_entry')
 
       if (error) {
         useError.value = error
-        useData.value = null
       }
-      if (originalData) {
-        const data = originalData[0] as LastWritingEntry
-        const metrics = getWritingMetrics(data.body || '')
-        const timeAgo = useTimeAgoIntl(data.created_at || '').value
+      if (data && data[0]) {
+        const entry = data[0]
+        const metrics = getWritingMetrics(entry.body || '')
+        const timeAgo = useTimeAgoIntl(entry.created_at || '').value
         const computedData = {
-          ...data,
+          ...entry,
           ...metrics,
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Fetched last writing entry`, { id: data.id })
+        logger.debug(`Fetched last writing entry`, { id: entry.id })
       }
       usePending.value = false
     }
