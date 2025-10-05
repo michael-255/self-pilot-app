@@ -5,9 +5,9 @@ import type { Database } from '~/types/supabase'
 export const useAuthStore = defineStore('auth', () => {
   const logger = useLogger()
   const supabase = useSupabaseClient<Database>()
-  const router = useRouter()
 
   const isLoggedIn = ref(false)
+  const isAuthReady = ref(false)
   const user = reactive({
     id: '',
     email: '',
@@ -15,15 +15,24 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   supabase.auth.onAuthStateChange((_event, session) => {
-    user.id = session?.user?.id || ''
-    user.email = session?.user?.email || ''
-    user.name = session?.user?.user_metadata?.display_name || ''
+    if (session?.user) {
+      user.id = session.user.id || ''
+      user.email = session.user.email || ''
+      user.name = session.user.user_metadata?.display_name || ''
+      isLoggedIn.value = true
+    } else {
+      user.id = ''
+      user.email = ''
+      user.name = ''
+      isLoggedIn.value = false
+    }
 
-    isLoggedIn.value = !!session?.user
+    isAuthReady.value = true
 
     logger.debug('Auth state changed', {
       user,
       isLoggedIn: isLoggedIn.value,
+      isAuthReady: isAuthReady.value,
     })
   })
 
@@ -38,10 +47,12 @@ export const useAuthStore = defineStore('auth', () => {
     user.name = data?.user?.user_metadata?.display_name || ''
 
     isLoggedIn.value = !!data.user
+    isAuthReady.value = true
 
     logger.debug('Fetched user', {
       user,
       isLoggedIn: isLoggedIn.value,
+      isAuthReady: isAuthReady.value,
     })
   }
 
@@ -53,10 +64,10 @@ export const useAuthStore = defineStore('auth', () => {
     if (error) throw error
 
     logger.info('Logout successful')
-    router.replace(to)
+    await navigateTo(to)
   }
 
   fetchUser() // Call on store init
 
-  return { user, isLoggedIn, fetchUser, onLogout }
+  return { user, isLoggedIn, isAuthReady, fetchUser, onLogout }
 })

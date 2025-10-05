@@ -7,6 +7,25 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
+- NEXT MIGRATION
+  - Update delete writing_entry to return a boolean
+
+```sql
+CREATE OR REPLACE FUNCTION api_journal.delete_writing_entry(in_id UUID)
+RETURNS TABLE (success BOOLEAN)
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+BEGIN
+  DELETE FROM app_journal.writing_entries
+  WHERE id = in_id
+    AND owner_id = auth.uid();
+  RETURN QUERY SELECT FOUND;
+END;
+$$;
+```
+
 - `/journal/search` - SEARCH **PRIORITY**
   - `Load more results` button at the bottom
   - each result should have an option to `Read` (goto read route)
