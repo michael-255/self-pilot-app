@@ -98,7 +98,7 @@ export default function useJournal() {
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Fetched last writing entry`, data.id)
+        logger.debug(`Fetched last writing entry`, { id: data.id })
       }
       usePending.value = false
     }
@@ -171,7 +171,6 @@ export default function useJournal() {
           endDate,
           query,
           offset,
-          found: data.length,
           ids: [...data.map((d) => d.id)],
         })
       }
@@ -224,7 +223,7 @@ export default function useJournal() {
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Fetched writing entry`, id)
+        logger.debug(`Fetched writing entry`, { id })
       }
       usePending.value = false
     }
@@ -287,7 +286,7 @@ export default function useJournal() {
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Created writing entry`, data.id)
+        logger.debug(`Created writing entry`, { id: data.id })
       }
       usePending.value = false
     }
@@ -353,7 +352,7 @@ export default function useJournal() {
           timeAgo,
         }
         useData.value = computedData
-        logger.debug(`Updated writing entry`, id)
+        logger.debug(`Updated writing entry`, { id })
       }
       usePending.value = false
     }
@@ -392,7 +391,7 @@ export default function useJournal() {
         useData.value = null
       } else {
         useData.value = true
-        logger.debug(`Deleted writing entry`, id)
+        logger.debug(`Deleted writing entry`, { id })
       }
       usePending.value = false
     }

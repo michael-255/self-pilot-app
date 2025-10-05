@@ -16,6 +16,7 @@ useSeoMeta({
   description,
 })
 
+const router = useRouter()
 const modal = useOverlay().create(ConfirmModal)
 const logger = useLogger()
 const {
@@ -63,7 +64,7 @@ const schema = z.object({
  */
 const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
   modal.open({
-    title: 'Finished Writing',
+    title: 'Finish Writing',
     description: 'Are you ready to finish this writing session and save the result?',
     color: 'primary',
     onConfirm: async () => {
@@ -80,8 +81,8 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
 
       state.subject = ''
       state.body = ''
-      await lastEntryRun()
       logger.info('Writing entry finished and saved', createEntryData.value?.id)
+      router.push('/journal/metrics')
     },
   })
 }
@@ -162,7 +163,7 @@ onMounted(async () => {
 
         <div class="flex justify-end mt-5">
           <UButton
-            label="Finished Writing"
+            label="Finish Writing"
             icon="i-lucide-notebook-pen"
             type="submit"
             color="primary"

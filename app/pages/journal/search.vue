@@ -154,11 +154,11 @@ onMounted(async () => {
       <div v-if="!pending">
         <div v-if="Array.isArray(data)">
           <div v-for="entry in data" :key="entry.id" class="mb-4 p-2 border rounded">
-            <div><strong>Subject:</strong> {{ entry.subject }}</div>
-            <div><strong>Category:</strong> {{ entry.category }}</div>
             <div><strong>Date:</strong> {{ entry.created_at }}</div>
-            <div><strong>Body:</strong> {{ entry.body }}</div>
             <div><strong>TimeAgo:</strong> {{ entry.timeAgo }}</div>
+            <div><strong>Category:</strong> {{ entry.category }}</div>
+            <div><strong>Subject:</strong> {{ entry.subject }}</div>
+            <div><strong>Body:</strong> {{ entry.body }}</div>
             <div><strong>Chars:</strong> {{ entry.characters }}</div>
             <div><strong>Words:</strong> {{ entry.words }}</div>
             <div><strong>ReadingTime:</strong> {{ entry.readingTime }} min</div>

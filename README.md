@@ -8,20 +8,19 @@ A collection of tools and mini-apps for day-to-day life.
 ## Next Steps
 
 - `/journal/search` - SEARCH **PRIORITY**
-  - Show stats on each result (words, time to read)
   - `Load more results` button at the bottom
-  - each result should have a menu to `read`, `edit`, and `delete`
+  - each result should have an option to `Read` (goto read route)
 
 - `/journal/read/:id` - READ
   - Use nice typography
   - Show stats (words, time to read)
   - `Edit` button (goto edit route)
-  - `Delete` button (ask for confirmation)
+  - `Delete` button (ask for confirmation + unlock)
 
 - `/journal/edit/:id` - EDIT
   - On update, goto `read` route with the id (replace?)
   - `Read` button (goto read route)
-  - `Delete` button (ask for confirmation)
+  - `Delete` button (ask for confirmation + unlock)
 
 - `/journal/metrics` - METRICS (redirect here after creating an entry)
   - Show the last enrty created (can click to read)
