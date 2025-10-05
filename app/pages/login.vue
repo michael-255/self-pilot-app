@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
+import type { Database } from '~/types/supabase'
 
 definePageMeta({
   layout: 'auth',
@@ -14,7 +15,7 @@ useSeoMeta({
 const route = useRoute()
 const router = useRouter()
 const logger = useLogger()
-const supabase = useSupabaseClient()
+const supabase = useSupabaseClient<Database>()
 const authStore = useAuthStore()
 const loading = useLoadingIndicator()
 const userEmail = useLocalStorage<string>('selfpilot-user-email', '')

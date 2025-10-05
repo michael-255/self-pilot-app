@@ -43,15 +43,6 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  runtimeConfig: {
-    public: {
-      supabase: {
-        url: process.env.NUXT_PUBLIC_SUPABASE_URL,
-        key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
-      },
-    },
-  },
-
   routeRules: {
     '/docs': { redirect: '/docs/getting-started', prerender: false },
   },
@@ -62,5 +53,7 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: true, // To login page if not signed in
+    url: process.env.NUXT_PUBLIC_SUPABASE_URL,
+    key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
   },
 })

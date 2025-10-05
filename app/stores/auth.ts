@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import type { Database } from '~/types/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
   const logger = useLogger()
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
   const router = useRouter()
 
   const isLoggedIn = ref(false)
