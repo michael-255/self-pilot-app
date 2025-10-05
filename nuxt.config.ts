@@ -14,6 +14,7 @@ export default defineNuxtConfig({
   ],
 
   pwa: {
+    base: pagesUrl,
     manifest: {
       name: 'Self Pilot',
       short_name: 'Self Pilot',
@@ -22,8 +23,8 @@ export default defineNuxtConfig({
       theme_color: '#1976d2',
       background_color: 'black',
       icons: [
-        { src: `${pagesUrl}icon-192x192.png`, sizes: '192x192', type: 'image/png' },
-        { src: `${pagesUrl}icon-512x512.png`, sizes: '512x512', type: 'image/png' },
+        { src: `icon-192x192.png`, sizes: '192x192', type: 'image/png' },
+        { src: `icon-512x512.png`, sizes: '512x512', type: 'image/png' },
       ],
     },
     registerType: 'autoUpdate',
