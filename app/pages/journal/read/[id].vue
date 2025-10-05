@@ -13,11 +13,15 @@ useSeoMeta({
 
 const { routeId } = useRouting()
 const { useGetWritingEntry } = useJournal()
-const { data: entry } = useGetWritingEntry(routeId)
+const { data, run } = useGetWritingEntry()
+
+onMounted(async () => {
+  await run(routeId)
+})
 </script>
 
 <template>
   <UPage>
-    <UContainer>{{ entry }} </UContainer>
+    <UContainer>{{ data }} </UContainer>
   </UPage>
 </template>

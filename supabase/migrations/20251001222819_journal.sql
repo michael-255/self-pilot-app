@@ -77,19 +77,34 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION app_journal.set_updated_at() FROM anon, authenticated;
 
-CREATE OR REPLACE FUNCTION api_journal.get_last_writing_date()
-RETURNS TIMESTAMPTZ
+CREATE OR REPLACE FUNCTION api_journal.get_last_writing_entry()
+RETURNS TABLE (
+  id UUID,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  category api_journal.writing_category,
+  subject TEXT,
+  body TEXT
+)
 LANGUAGE sql
 SECURITY INVOKER
 SET search_path = ''
 AS $$
-  SELECT MAX(created_at)
-  FROM app_journal.writing_entries
-  WHERE owner_id = auth.uid()
+  SELECT
+    e.id,
+    e.created_at,
+    e.updated_at,
+    e.category,
+    e.subject,
+    e.body
+  FROM app_journal.writing_entries e
+  WHERE e.owner_id = auth.uid()
+  ORDER BY e.created_at DESC
+  LIMIT 1
 $$;
 
-REVOKE EXECUTE ON FUNCTION api_journal.get_last_writing_date() FROM anon;
-GRANT EXECUTE ON FUNCTION api_journal.get_last_writing_date() TO authenticated, service_role;
+REVOKE EXECUTE ON FUNCTION api_journal.get_last_writing_entry() FROM anon;
+GRANT EXECUTE ON FUNCTION api_journal.get_last_writing_entry() TO authenticated, service_role;
 
 CREATE OR REPLACE FUNCTION api_journal.search_writing_entries(
   in_category api_journal.writing_category DEFAULT NULL,

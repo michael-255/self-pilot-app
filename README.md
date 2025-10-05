@@ -7,9 +7,6 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- `useJournal` - Refactor to use custom composable versus `useAsyncData`
-  - Include `logger.debug(...)` statements in the functions
-
 - `/journal/search` - SEARCH **PRIORITY**
   - Show stats on each result (words, time to read)
   - `Load more results` button at the bottom
@@ -26,7 +23,9 @@ A collection of tools and mini-apps for day-to-day life.
   - `Read` button (goto read route)
   - `Delete` button (ask for confirmation)
 
-- `/journal/metrics` - METRICS (_review_)
+- `/journal/metrics` - METRICS (redirect here after creating an entry)
+  - Show the last enrty created (can click to read)
+  - Show stats on all writings (total writings done)
   - Show stats (words, time to read)
   - Graph of writings over time (day/week/month/year)
   - Most popular categories

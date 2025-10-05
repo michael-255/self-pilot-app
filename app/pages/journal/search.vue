@@ -158,6 +158,10 @@ onMounted(async () => {
             <div><strong>Category:</strong> {{ entry.category }}</div>
             <div><strong>Date:</strong> {{ entry.created_at }}</div>
             <div><strong>Body:</strong> {{ entry.body }}</div>
+            <div><strong>TimeAgo:</strong> {{ entry.timeAgo }}</div>
+            <div><strong>Chars:</strong> {{ entry.characters }}</div>
+            <div><strong>Words:</strong> {{ entry.words }}</div>
+            <div><strong>ReadingTime:</strong> {{ entry.readingTime }} min</div>
           </div>
         </div>
         <div v-else>No results found.</div>

@@ -23,16 +23,20 @@ const {
   writingSubject,
   writingBody,
   categories,
-  useGetLastWritingDate,
-  createWritingEntry,
+  useGetLastWritingEntry,
+  useCreateWritingEntry,
   getWritingMetrics,
 } = useJournal()
-
 const {
-  lastWritingTimeAgo,
-  pending: lastWritingDatePending,
-  run: runLastWritingDate,
-} = useGetLastWritingDate()
+  data: lastEntryData,
+  pending: lastEntryPending,
+  run: lastEntryRun,
+} = useGetLastWritingEntry()
+const {
+  data: createEntryData,
+  error: createEntryError,
+  run: createEntryRun,
+} = useCreateWritingEntry()
 
 const bodyPlaceholder = getInspirationalMessage()
 const writingMetrics = computed(() => getWritingMetrics(state.body))
@@ -60,30 +64,30 @@ const schema = z.object({
 const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
   modal.open({
     title: 'Finished Writing',
-    description: 'Are you ready to finish this writing session and save it?',
+    description: 'Are you ready to finish this writing session and save the result?',
     color: 'primary',
     onConfirm: async () => {
-      const { data, error } = await createWritingEntry({
+      await createEntryRun({
         category: payload.data.category,
         subject: payload.data.subject,
         body: payload.data.body,
       })
 
-      if (error) {
-        logger.error('Error creating writing entry:', error)
+      if (createEntryError.value) {
+        logger.error('Error creating writing entry:', createEntryError.value)
         return
       }
 
       state.subject = ''
       state.body = ''
-      await runLastWritingDate()
-      logger.info('Writing entry finished and saved', data)
+      await lastEntryRun()
+      logger.info('Writing entry finished and saved', createEntryData.value?.id)
     },
   })
 }
 
 onMounted(async () => {
-  await runLastWritingDate()
+  await lastEntryRun()
 })
 </script>
 
@@ -93,10 +97,12 @@ onMounted(async () => {
       <div class="text-lg my-4">
         Writing for {{ getBriefDisplayDate(new Date().toISOString()) }}
 
-        <USkeleton v-if="lastWritingDatePending" class="h-4 w-48" />
+        <USkeleton v-if="lastEntryPending" class="h-4 w-48" />
 
         <div v-else class="text-sm text-gray-600 dark:text-gray-400 h-4">
-          <template v-if="lastWritingTimeAgo"> Last entry was {{ lastWritingTimeAgo }} </template>
+          <template v-if="lastEntryData && lastEntryData.timeAgo">
+            Last entry was {{ lastEntryData.timeAgo }}
+          </template>
           <template v-else> This is your first writing entry! </template>
         </div>
       </div>
@@ -143,7 +149,7 @@ onMounted(async () => {
             <div>
               <div class="text-sm text-gray-600 dark:text-gray-400">Words</div>
               <div class="text-2xl">
-                {{ writingMetrics.wordCount }}
+                {{ writingMetrics.words }}
               </div>
             </div>
 

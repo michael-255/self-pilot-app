@@ -11,6 +11,10 @@ const items = computed(() => [
     label: 'Search',
     to: '/journal/search',
   },
+  {
+    label: 'Metrics',
+    to: '/journal/metrics',
+  },
 ])
 </script>
 

@@ -1,5 +1,4 @@
 import type { PostgrestError } from '@supabase/supabase-js'
-import { computed } from 'vue'
 import { Constants, type Database } from '~/types/supabase'
 
 /**
@@ -9,6 +8,8 @@ export default function useJournal() {
   const supabase = useSupabaseClient<Database>()
   const logger = useLogger()
 
+  type WritingCategory = Database['api_journal']['Enums']['writing_category']
+
   /**
    * List of writing categories from the database enums.
    */
@@ -17,7 +18,7 @@ export default function useJournal() {
   /**
    * User's selected search category, persisted in local storage.
    */
-  const searchCategory = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
+  const searchCategory = useLocalStorage<WritingCategory>(
     'selfpilot-search-category',
     Constants.api_journal.Enums.writing_category[0],
   )
@@ -25,7 +26,7 @@ export default function useJournal() {
   /**
    * User's selected writing category, persisted in local storage.
    */
-  const writingCategory = useLocalStorage<Database['api_journal']['Enums']['writing_category']>(
+  const writingCategory = useLocalStorage<WritingCategory>(
     'selfpilot-writing-category',
     Constants.api_journal.Enums.writing_category[0],
   )
@@ -40,34 +41,39 @@ export default function useJournal() {
    */
   const writingBody = useLocalStorage<string>('selfpilot-writing-body', '')
 
+  type WritingMetrics = { characters: number; words: number; readingTime: number }
+
   /**
    * Utility to get the word count and estimated reading time for a given set of texts.
    */
   const getWritingMetrics = (text: string) => {
-    let wordCount = 0
+    let words = 0
     const characters = text.length
 
     // Calculate word count
     if (text) {
       const segmenter = new Intl.Segmenter('en', { granularity: 'word' })
       for (const segment of segmenter.segment(text)) {
-        if (segment.isWordLike) wordCount++
+        if (segment.isWordLike) words++
       }
     }
 
     // Calculate reading time assuming 200 words per minute
-    const readingTime = Math.max(0, Math.ceil(wordCount / 200))
-    return { characters, wordCount, readingTime }
+    const readingTime = Math.max(0, Math.ceil(words / 200))
+    return { characters, words, readingTime }
   }
 
   /**
-   * Fetch the date of the last writing entry.
+   * Fetch the last writing entry that was made.
    */
-  const useGetLastWritingDate = () => {
-    const useRan = ref<boolean>(false)
+  const useGetLastWritingEntry = () => {
+    type LastWritingEntry =
+      Database['api_journal']['Functions']['get_last_writing_entry']['Returns'][number] &
+        WritingMetrics & { timeAgo: string }
+
     const usePending = ref<boolean>(false)
     const useError = ref<PostgrestError | null>(null)
-    const useData = ref<string | null>(null)
+    const useData = ref<LastWritingEntry | null>(null)
 
     const run = async () => {
       usePending.value = true
@@ -76,7 +82,7 @@ export default function useJournal() {
 
       const { data, error } = await supabase
         .schema('api_journal')
-        .rpc('get_last_writing_date')
+        .rpc('get_last_writing_entry')
         .single()
 
       if (error) {
@@ -84,20 +90,23 @@ export default function useJournal() {
         useData.value = null
       }
       if (data) {
-        useData.value = data
+        const metrics = getWritingMetrics(data.body || '')
+        const timeAgo = useTimeAgoIntl(data.created_at).value
+        const computedData = {
+          ...data,
+          ...metrics,
+          timeAgo,
+        }
+        useData.value = computedData
+        logger.debug(`Fetched last writing entry`, data.id)
       }
       usePending.value = false
-      useRan.value = true
     }
 
-    const lastWritingTimeAgo = computed(() => {
-      if (!useData.value) return ''
-      return useTimeAgoIntl(useData.value)
-    })
-
     return {
-      lastWritingTimeAgo,
-      ran: useRan,
+      unused: computed(
+        () => !usePending.value && useData.value === null && useError.value === null,
+      ),
       data: useData,
       pending: usePending,
       error: useError,
@@ -109,12 +118,13 @@ export default function useJournal() {
    * Searching writing entries with optional filters.
    */
   const useSearchWritingEntries = () => {
-    const useRan = ref<boolean>(false)
+    type SearchWritingEntry =
+      Database['api_journal']['Functions']['search_writing_entries']['Returns'][number] &
+        WritingMetrics & { timeAgo: string }
+
     const usePending = ref<boolean>(false)
     const useError = ref<PostgrestError | null>(null)
-    const useData = ref<
-      Database['api_journal']['Functions']['search_writing_entries']['Returns'] | null
-    >(null)
+    const useData = ref<SearchWritingEntry[] | null>(null)
 
     const run = async ({
       category,
@@ -123,7 +133,7 @@ export default function useJournal() {
       query,
       offset,
     }: {
-      category?: Database['api_journal']['Enums']['writing_category']
+      category?: WritingCategory
       startDate?: string
       endDate?: string
       query?: string
@@ -146,114 +156,256 @@ export default function useJournal() {
         useData.value = null
       }
       if (data) {
-        useData.value = data
+        useData.value = data.map((entry) => {
+          const metrics = getWritingMetrics(entry.body || '')
+          const timeAgo = useTimeAgoIntl(entry.created_at).value
+          return {
+            ...entry,
+            ...metrics,
+            timeAgo,
+          }
+        })
+        logger.debug(`Searched writing entries`, {
+          category,
+          startDate,
+          endDate,
+          query,
+          offset,
+          found: data.length,
+          ids: [...data.map((d) => d.id)],
+        })
       }
       usePending.value = false
-      useRan.value = true
     }
 
-    return { ran: useRan, data: useData, pending: usePending, error: useError, run }
+    return {
+      unused: computed(
+        () => !usePending.value && useData.value === null && useError.value === null,
+      ),
+      data: useData,
+      pending: usePending,
+      error: useError,
+      run,
+    }
   }
 
   /**
    * Get a single writing entry by ID.
-   * TODO: Refactor to not use useAsyncData
    */
-  const useGetWritingEntry = (id: string) => {
-    const { data, pending, error, refresh } = useAsyncData(`writing_entry_${id}`, async () => {
+  const useGetWritingEntry = () => {
+    type GetWritingEntry =
+      Database['api_journal']['Functions']['get_writing_entry']['Returns'][number] &
+        WritingMetrics & { timeAgo: string }
+
+    const usePending = ref<boolean>(false)
+    const useError = ref<PostgrestError | null>(null)
+    const useData = ref<GetWritingEntry | null>(null)
+
+    const run = async (id: string) => {
+      usePending.value = true
+      useError.value = null
+      useData.value = null
+
       const { data, error } = await supabase
         .schema('api_journal')
         .rpc('get_writing_entry', { in_id: id })
         .single()
 
-      if (error) throw error
+      if (error) {
+        useError.value = error
+        useData.value = null
+      }
+      if (data) {
+        const metrics = getWritingMetrics(data.body || '')
+        const timeAgo = useTimeAgoIntl(data.created_at).value
+        const computedData = {
+          ...data,
+          ...metrics,
+          timeAgo,
+        }
+        useData.value = computedData
+        logger.debug(`Fetched writing entry`, id)
+      }
+      usePending.value = false
+    }
 
-      logger.debug(`Fetched writing entry:`, data)
-      return data
-    })
-
-    return { data, pending, error, refresh }
+    return {
+      unused: computed(
+        () => !usePending.value && useData.value === null && useError.value === null,
+      ),
+      data: useData,
+      pending: usePending,
+      error: useError,
+      run,
+    }
   }
 
   /**
    * Create a new writing entry.
-   * TODO: Refactor to composable?
    */
-  const createWritingEntry = async ({
-    category,
-    subject,
-    body,
-  }: {
-    category: Database['api_journal']['Enums']['writing_category']
-    subject: string
-    body: string
-  }) => {
-    const { data, error } = await supabase
-      .schema('api_journal')
-      .rpc('create_writing_entry', {
-        in_category: category,
-        in_subject: subject,
-        in_body: body,
-      })
-      .single()
+  const useCreateWritingEntry = () => {
+    type CreateWritingEntry =
+      Database['api_journal']['Functions']['create_writing_entry']['Returns'][number] &
+        WritingMetrics & { timeAgo: string }
 
-    if (error) {
-      return { data: null, error }
+    const usePending = ref<boolean>(false)
+    const useError = ref<PostgrestError | null>(null)
+    const useData = ref<CreateWritingEntry | null>(null)
+
+    const run = async ({
+      category,
+      subject,
+      body,
+    }: {
+      category: WritingCategory
+      subject: string
+      body: string
+    }) => {
+      usePending.value = true
+      useError.value = null
+      useData.value = null
+
+      const { data, error } = await supabase
+        .schema('api_journal')
+        .rpc('create_writing_entry', {
+          in_category: category,
+          in_subject: subject,
+          in_body: body,
+        })
+        .single()
+
+      if (error) {
+        useError.value = error
+        useData.value = null
+      }
+      if (data) {
+        const metrics = getWritingMetrics(data.body || '')
+        const timeAgo = useTimeAgoIntl(data.created_at).value
+        const computedData = {
+          ...data,
+          ...metrics,
+          timeAgo,
+        }
+        useData.value = computedData
+        logger.debug(`Created writing entry`, data.id)
+      }
+      usePending.value = false
     }
 
-    logger.debug('Created writing entry:', data)
-    return { data, error: null }
+    return {
+      unused: computed(
+        () => !usePending.value && useData.value === null && useError.value === null,
+      ),
+      data: useData,
+      pending: usePending,
+      error: useError,
+      run,
+    }
   }
 
   /**
    * Update an existing writing entry.
-   * TODO: Refactor to composable?
    */
-  const updateWritingEntry = async ({
-    id,
-    category,
-    subject,
-    body,
-  }: {
-    id: string
-    category: Database['api_journal']['Enums']['writing_category']
-    subject: string
-    body: string
-  }) => {
-    const { data, error } = await supabase
-      .schema('api_journal')
-      .rpc('update_writing_entry', {
-        in_id: id,
-        in_category: category,
-        in_subject: subject,
-        in_body: body,
-      })
-      .single()
+  const useUpdateWritingEntry = () => {
+    type UpdateWritingEntry =
+      Database['api_journal']['Functions']['update_writing_entry']['Returns'][number] &
+        WritingMetrics & { timeAgo: string }
 
-    if (error) {
-      return { data: null, error }
+    const usePending = ref<boolean>(false)
+    const useError = ref<PostgrestError | null>(null)
+    const useData = ref<UpdateWritingEntry | null>(null)
+
+    const run = async ({
+      id,
+      category,
+      subject,
+      body,
+    }: {
+      id: string
+      category: WritingCategory
+      subject: string
+      body: string
+    }) => {
+      usePending.value = true
+      useError.value = null
+      useData.value = null
+
+      const { data, error } = await supabase
+        .schema('api_journal')
+        .rpc('update_writing_entry', {
+          in_id: id,
+          in_category: category,
+          in_subject: subject,
+          in_body: body,
+        })
+        .single()
+
+      if (error) {
+        useError.value = error
+        useData.value = null
+      }
+      if (data) {
+        const metrics = getWritingMetrics(data.body || '')
+        const timeAgo = useTimeAgoIntl(data.created_at).value
+        const computedData = {
+          ...data,
+          ...metrics,
+          timeAgo,
+        }
+        useData.value = computedData
+        logger.debug(`Updated writing entry`, id)
+      }
+      usePending.value = false
     }
 
-    logger.debug('Updated writing entry:', data)
-    return { data, error: null }
+    return {
+      unused: computed(
+        () => !usePending.value && useData.value === null && useError.value === null,
+      ),
+      data: useData,
+      pending: usePending,
+      error: useError,
+      run,
+    }
   }
 
   /**
    * Delete a writing entry by ID.
-   * TODO: Refactor to composable?
    */
-  const deleteWritingEntry = async (id: string) => {
-    const { error } = await supabase
-      .schema('api_journal')
-      .rpc('delete_writing_entry', { in_id: id })
-      .single()
+  const useDeleteWritingEntry = () => {
+    const usePending = ref<boolean>(false)
+    const useError = ref<PostgrestError | null>(null)
+    const useData = ref<true | null>(null)
 
-    if (error) {
-      return { data: null, error }
+    const run = async (id: string) => {
+      usePending.value = true
+      useError.value = null
+      useData.value = null
+
+      const { error } = await supabase
+        .schema('api_journal')
+        .rpc('delete_writing_entry', { in_id: id })
+        .single()
+
+      if (error) {
+        useError.value = error
+        useData.value = null
+      } else {
+        useData.value = true
+        logger.debug(`Deleted writing entry`, id)
+      }
+      usePending.value = false
     }
 
-    logger.debug(`Deleted writing entry`, id)
-    return { data: true, error: null }
+    return {
+      unused: computed(
+        () => !usePending.value && useData.value === null && useError.value === null,
+      ),
+      data: useData,
+      pending: usePending,
+      error: useError,
+      run,
+    }
   }
 
   return {
@@ -263,11 +415,11 @@ export default function useJournal() {
     writingSubject,
     writingBody,
     getWritingMetrics,
-    useGetLastWritingDate,
+    useGetLastWritingEntry,
     useSearchWritingEntries,
     useGetWritingEntry,
-    createWritingEntry,
-    updateWritingEntry,
-    deleteWritingEntry,
+    useCreateWritingEntry,
+    useUpdateWritingEntry,
+    useDeleteWritingEntry,
   }
 }
