@@ -80,14 +80,11 @@ export default function useJournal() {
       useError.value = null
       useData.value = null
 
-      logger.warn('RUN A: useGetLastWritingEntry')
-
       const { data, error } = await supabase
         .schema('api_journal')
         .rpc('get_last_writing_entry')
+        .limit(1)
         .maybeSingle()
-
-      logger.warn('RUN B: useGetLastWritingEntry', { data, error })
 
       if (error) {
         useError.value = error
