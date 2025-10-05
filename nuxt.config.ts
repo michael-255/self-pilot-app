@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     },
     registerType: 'autoUpdate',
     workbox: {
-      navigateFallback: '/self-pilot-app/index.html', // To stop non-precached-urls errors
+      navigateFallback: undefined, // To stop non-precached-urls errors
     },
   },
 

@@ -16,7 +16,6 @@ useSeoMeta({
   description,
 })
 
-const router = useRouter()
 const modal = useOverlay().create(ConfirmModal)
 const logger = useLogger()
 const {
@@ -82,7 +81,7 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
       state.subject = ''
       state.body = ''
       logger.info('Writing entry finished and saved', createEntryData.value?.id)
-      router.push('/journal/metrics')
+      await navigateTo('/journal/metrics')
     },
   })
 }
