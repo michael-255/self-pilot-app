@@ -1,3 +1,4 @@
+import type { PostgrestError } from '@supabase/supabase-js'
 import { computed } from 'vue'
 import { Constants, type Database } from '~/types/supabase'
 
@@ -12,11 +13,6 @@ export default function useJournal() {
    * List of writing categories from the database enums.
    */
   const categories = Constants.api_journal.Enums.writing_category.flat()
-
-  /**
-   * Categories list including "Any Category" option.
-   */
-  const categoriesWithAny = ['Any Category', ...Constants.api_journal.Enums.writing_category.flat()]
 
   /**
    * User's selected search category, persisted in local storage.
@@ -61,77 +57,107 @@ export default function useJournal() {
 
     // Calculate reading time assuming 200 words per minute
     const readingTime = Math.max(0, Math.ceil(wordCount / 200))
-    return { wordCount, readingTime, characters }
+    return { characters, wordCount, readingTime }
   }
 
   /**
    * Fetch the date of the last writing entry.
    */
   const useGetLastWritingDate = () => {
-    const {
-      data: lastWritingDate,
-      pending,
-      error,
-      refresh,
-    } = useAsyncData('lastWritingDate', async () => {
+    const useRan = ref<boolean>(false)
+    const usePending = ref<boolean>(false)
+    const useError = ref<PostgrestError | null>(null)
+    const useData = ref<string | null>(null)
+
+    const run = async () => {
+      usePending.value = true
+      useError.value = null
+      useData.value = null
+
       const { data, error } = await supabase
         .schema('api_journal')
         .rpc('get_last_writing_date')
         .single()
 
-      if (error) throw error
-
-      logger.debug('Fetched last writing date:', data)
-      return data
-    })
+      if (error) {
+        useError.value = error
+        useData.value = null
+      }
+      if (data) {
+        useData.value = data
+      }
+      usePending.value = false
+      useRan.value = true
+    }
 
     const lastWritingTimeAgo = computed(() => {
-      if (!lastWritingDate.value) return ''
-      return useTimeAgoIntl(lastWritingDate.value)
+      if (!useData.value) return ''
+      return useTimeAgoIntl(useData.value)
     })
 
-    return { lastWritingDate, lastWritingTimeAgo, pending, error, refresh }
+    return {
+      lastWritingTimeAgo,
+      ran: useRan,
+      data: useData,
+      pending: usePending,
+      error: useError,
+      run,
+    }
   }
 
   /**
    * Searching writing entries with optional filters.
    */
-  const useSearchWritingEntries = ({
-    category,
-    startDate,
-    endDate,
-    query,
-    offset,
-  }: {
-    category?: Database['api_journal']['Enums']['writing_category']
-    startDate?: string
-    endDate?: string
-    query?: string
-    offset?: number
-  }) => {
-    const { data, pending, error, refresh } = useAsyncData(
-      `writing_entries_${JSON.stringify({ category, startDate, endDate, query, offset })}`,
-      async () => {
-        const { data, error } = await supabase.schema('api_journal').rpc('search_writing_entries', {
-          in_category: category,
-          in_start_date: startDate,
-          in_end_date: endDate,
-          in_query: query,
-          in_offset: offset,
-        })
+  const useSearchWritingEntries = () => {
+    const useRan = ref<boolean>(false)
+    const usePending = ref<boolean>(false)
+    const useError = ref<PostgrestError | null>(null)
+    const useData = ref<
+      Database['api_journal']['Functions']['search_writing_entries']['Returns'] | null
+    >(null)
 
-        if (error) throw error
+    const run = async ({
+      category,
+      startDate,
+      endDate,
+      query,
+      offset,
+    }: {
+      category?: Database['api_journal']['Enums']['writing_category']
+      startDate?: string
+      endDate?: string
+      query?: string
+      offset?: number
+    }) => {
+      usePending.value = true
+      useError.value = null
+      useData.value = null
 
-        logger.debug('Searched writing entries:', data)
-        return data
-      },
-    )
+      const { data, error } = await supabase.schema('api_journal').rpc('search_writing_entries', {
+        in_category: category,
+        in_start_date: startDate,
+        in_end_date: endDate,
+        in_query: query,
+        in_offset: offset,
+      })
 
-    return { data, pending, error, refresh }
+      if (error) {
+        useError.value = error
+        useData.value = null
+      }
+      if (data) {
+        useData.value = data
+      }
+      usePending.value = false
+      useRan.value = true
+    }
+
+    return { ran: useRan, data: useData, pending: usePending, error: useError, run }
   }
 
   /**
    * Get a single writing entry by ID.
+   * TODO: Refactor to not use useAsyncData
    */
   const useGetWritingEntry = (id: string) => {
     const { data, pending, error, refresh } = useAsyncData(`writing_entry_${id}`, async () => {
@@ -151,6 +177,7 @@ export default function useJournal() {
 
   /**
    * Create a new writing entry.
+   * TODO: Refactor to composable?
    */
   const createWritingEntry = async ({
     category,
@@ -180,6 +207,7 @@ export default function useJournal() {
 
   /**
    * Update an existing writing entry.
+   * TODO: Refactor to composable?
    */
   const updateWritingEntry = async ({
     id,
@@ -212,6 +240,7 @@ export default function useJournal() {
 
   /**
    * Delete a writing entry by ID.
+   * TODO: Refactor to composable?
    */
   const deleteWritingEntry = async (id: string) => {
     const { error } = await supabase
@@ -229,7 +258,6 @@ export default function useJournal() {
 
   return {
     categories,
-    categoriesWithAny,
     searchCategory,
     writingCategory,
     writingSubject,

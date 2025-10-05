@@ -97,6 +97,7 @@ $$;
 --
 CREATE OR REPLACE PROCEDURE seeding.create_writing_entry(
   in_owner_id UUID,
+  in_created_at TIMESTAMPTZ,
   in_category api_journal.writing_category,
   in_subject TEXT,
   in_body TEXT
@@ -105,6 +106,6 @@ LANGUAGE sql
 SECURITY DEFINER
 SET search_path = ''
 AS $$
-  INSERT INTO app_journal.writing_entries (owner_id, category, subject, body)
-  VALUES (in_owner_id, in_category, in_subject, in_body);
+  INSERT INTO app_journal.writing_entries (owner_id, created_at, category, subject, body)
+  VALUES (in_owner_id, in_created_at, in_category, in_subject, in_body);
 $$;

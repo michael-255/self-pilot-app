@@ -27,10 +27,11 @@ const {
   createWritingEntry,
   getWritingMetrics,
 } = useJournal()
+
 const {
   lastWritingTimeAgo,
   pending: lastWritingDatePending,
-  refresh: refeshLastWritingDate,
+  run: runLastWritingDate,
 } = useGetLastWritingDate()
 
 const bodyPlaceholder = getInspirationalMessage()
@@ -75,11 +76,15 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
 
       state.subject = ''
       state.body = ''
-      refeshLastWritingDate()
+      await runLastWritingDate()
       logger.info('Writing entry finished and saved', data)
     },
   })
 }
+
+onMounted(async () => {
+  await runLastWritingDate()
+})
 </script>
 
 <template>

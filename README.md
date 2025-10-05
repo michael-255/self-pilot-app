@@ -7,9 +7,10 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
+- `useJournal` - Refactor to use custom composable versus `useAsyncData`
+  - Include `logger.debug(...)` statements in the functions
+
 - `/journal/search` - SEARCH **PRIORITY**
-  - Search by category, start date, end date, and search query
-  - list up to 20 results at a time
   - Show stats on each result (words, time to read)
   - `Load more results` button at the bottom
   - each result should have a menu to `read`, `edit`, and `delete`
