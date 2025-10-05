@@ -13,7 +13,6 @@ useSeoMeta({
 
 const modal = useOverlay().create(ConfirmModal)
 const route = useRoute()
-const router = useRouter()
 const logger = useLogger()
 const authStore = useAuthStore()
 const isDevMode = import.meta.env.DEV
@@ -156,7 +155,7 @@ const onTestLogger = () => {
               icon="i-lucide-text-search"
               size="lg"
               label="View Logs"
-              @click="router.push('/settings/logs')"
+              to="/settings/logs"
             />
           </div>
 
