@@ -1,6 +1,6 @@
-name: Test Code
+name: Test
 
-run-name: Test Code - ${{ github.event.head_commit.message || 'Running' }}
+run-name: Test - ${{ github.event.head_commit.message || 'Running' }}
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test_code:
+  test:
     runs-on: ubuntu-latest
 
     steps:
