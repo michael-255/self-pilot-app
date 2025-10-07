@@ -43,11 +43,7 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  routeRules: {
-    '/docs': { redirect: '/docs/getting-started', prerender: false },
-  },
-
-  compatibilityDate: '2024-07-11',
+  compatibilityDate: '2025-10-06', // Compatibility date for Nitro presets
 
   nitro: { preset: 'static' },
 

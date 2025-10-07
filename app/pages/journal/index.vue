@@ -18,24 +18,16 @@ useSeoMeta({
 
 const modal = useOverlay().create(ConfirmModal)
 const logger = useLogger()
-const {
-  writingCategory,
-  writingSubject,
-  writingBody,
-  categories,
-  useGetLastWritingEntry,
-  useCreateWritingEntry,
-  getWritingMetrics,
-} = useJournal()
+const { writingCategory, writingSubject, writingBody, categories } = useJournal()
 const {
   data: lastEntryData,
-  pending: lastEntryPending,
-  run: lastEntryRun,
+  isPending: lastEntryPending,
+  refetch: lastEntryRefetch,
 } = useGetLastWritingEntry()
 const {
   data: createEntryData,
   error: createEntryError,
-  run: createEntryRun,
+  mutateAsync: createEntry,
 } = useCreateWritingEntry()
 
 const bodyPlaceholder = getInspirationalMessage()
@@ -67,7 +59,7 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
     description: 'Are you ready to finish this writing session and save the result?',
     color: 'primary',
     onConfirm: async () => {
-      await createEntryRun({
+      await createEntry({
         category: payload.data.category,
         subject: payload.data.subject,
         body: payload.data.body,
@@ -87,7 +79,7 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
 }
 
 onMounted(async () => {
-  await lastEntryRun()
+  await lastEntryRefetch()
 })
 </script>
 

@@ -13,7 +13,7 @@ useSeoMeta({
   description,
 })
 
-const { searchCategory, categories, useSearchWritingEntries } = useJournal()
+const { searchCategory, categories } = useJournal()
 
 const categoriesWithAny = ['Any Category', ...categories]
 
@@ -44,33 +44,59 @@ const endDateObj = modelValue.value.end.toDate('UTC')
 endDateObj.setUTCHours(23, 59, 59, 999)
 // const endDateIso = endDateObj.toISOString()
 
-const { data, pending, run } = useSearchWritingEntries()
+type SearchParams = {
+  query: string | undefined
+  category: WritingCategory | 'Any Category' | undefined
+  startDate: string | undefined
+  endDate: string | undefined
+  offset: number
+}
+
+const params = reactive<SearchParams>({
+  query: undefined,
+  category: searchCategory.value === 'Any Category' ? undefined : searchCategory.value,
+  startDate: modelValue.value.start
+    ? modelValue.value.start.toDate('UTC').toISOString()
+    : undefined,
+  endDate: modelValue.value.end
+    ? (() => {
+        const d = modelValue.value.end.toDate('UTC')
+        d.setUTCHours(23, 59, 59, 999)
+        return d.toISOString()
+      })()
+    : undefined,
+  offset: 0,
+})
+
+const { data, isPending, refetch } = useSearchWritingEntries({
+  query: toRef(params, 'query'),
+  category: toRef(params, 'category'),
+  startDate: toRef(params, 'startDate'),
+  endDate: toRef(params, 'endDate'),
+  offset: toRef(params, 'offset'),
+})
 
 const onSearch = async (offset: number = 0) => {
+  params.category = searchCategory.value === 'Any Category' ? undefined : searchCategory.value
   // Trim the query to avoid unnecessary spaces
-  const inputQuery = query.value.trim() === '' ? undefined : query.value.trim()
-  // @ts-expect-error - "Any Category" is included for ignoring the category filter
-  const inputCategory = searchCategory.value === 'Any Category' ? undefined : searchCategory.value
+  params.query = query.value.trim() === '' ? undefined : query.value.trim()
   // Converting CalendarDate to ISO string for the API
-  const inputStartDate = modelValue.value.start
+  params.startDate = modelValue.value.start
     ? modelValue.value.start.toDate('UTC').toISOString()
     : undefined
   // Converting CalendarDate to end of day ISO string for the API
-  const inputEndDate = modelValue.value.end
+  params.endDate = modelValue.value.end
     ? (() => {
         const d = modelValue.value.end.toDate('UTC')
         d.setUTCHours(23, 59, 59, 999)
         return d.toISOString()
       })()
     : undefined
+  params.offset = offset
 
-  await run({
-    query: inputQuery,
-    category: inputCategory,
-    startDate: inputStartDate,
-    endDate: inputEndDate,
-    offset,
-  })
+  console.log('Searching with params:', params)
+
+  await refetch()
 }
 
 onMounted(async () => {
@@ -151,7 +177,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div v-if="!pending">
+      <div v-if="!isPending">
         <div v-if="Array.isArray(data)">
           <div v-for="entry in data" :key="entry.id" class="mb-4 p-2 border rounded">
             <div><strong>Date:</strong> {{ entry.created_at }}</div>
