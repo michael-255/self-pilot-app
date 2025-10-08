@@ -23,7 +23,7 @@ A collection of tools and mini-apps for day-to-day life.
   - `Read` button (goto read route)
   - `Delete` button (ask for confirmation + unlock)
 
-- `/journal/metrics` - METRICS (redirect here after creating an entry)
+- `/journal/metrics` - METRICS
   - Show the last enrty created (can click to read)
   - Show stats on all writings (total writings done)
   - Show stats (words, time to read)

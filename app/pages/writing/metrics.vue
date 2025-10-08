@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'journal',
+  layout: 'writing',
 })
 
-const title = 'Journal - Metrics'
+const title = 'Writing - Metrics'
 const description = 'Stats and insights on your writing entries.'
 
 useSeoMeta({

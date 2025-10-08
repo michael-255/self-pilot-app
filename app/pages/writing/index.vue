@@ -2,13 +2,14 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
 import ConfirmModal from '~/components/shared/ConfirmModal.vue'
+import { categories, useGetLastEntry } from '~/composables/useWriting'
 import { Constants } from '~/types/supabase'
 
 definePageMeta({
-  layout: 'journal',
+  layout: 'writing',
 })
 
-const title = 'Journal - Writing'
+const title = 'Writing - Entry'
 const description = 'Write about anything and everything.'
 
 useSeoMeta({
@@ -16,14 +17,11 @@ useSeoMeta({
   description,
 })
 
-const modal = useOverlay().create(ConfirmModal)
 const logger = useLogger()
-const { writingCategory, writingSubject, writingBody, categories } = useJournal()
-const {
-  data: lastEntryData,
-  isPending: lastEntryPending,
-  refetch: lastEntryRefetch,
-} = useGetLastWritingEntry()
+
+const createModal = useOverlay().create(ConfirmModal)
+
+const { data, isPending, refetch } = useGetLastEntry()
 const {
   data: createEntryData,
   error: createEntryError,
@@ -34,27 +32,27 @@ const bodyPlaceholder = getInspirationalMessage()
 const writingMetrics = computed(() => getWritingMetrics(state.body))
 
 const state = reactive({
-  category: writingCategory,
-  subject: writingSubject,
-  body: writingBody,
+  category: useLocalStorage<WritingCategory>('selfpilot-writing-category', 'Journaling'),
+  subject: useLocalStorage<string>('selfpilot-writing-subject', ''),
+  body: useLocalStorage<string>('selfpilot-writing-body', ''),
 })
 
-const MAX_JOURNAL_SUBJECT = 100
-const MAX_JOURNAL_BODY = 30000
+const MAX_WRITING_SUBJECT = 100
+const MAX_WRITING_BODY = 50_000
 
 const schema = z.object({
-  category: z.enum(Constants.api_journal.Enums.writing_category),
+  category: z.enum(Constants.api_writing.Enums.category),
   subject: z
     .string()
-    .max(MAX_JOURNAL_SUBJECT, `Subject cannot exceed ${MAX_JOURNAL_SUBJECT} characters`),
-  body: z.string().max(MAX_JOURNAL_BODY, `Body cannot exceed ${MAX_JOURNAL_BODY} characters`),
+    .max(MAX_WRITING_SUBJECT, `Subject cannot exceed ${MAX_WRITING_SUBJECT} characters`),
+  body: z.string().max(MAX_WRITING_BODY, `Body cannot exceed ${MAX_WRITING_BODY} characters`),
 })
 
 /**
  * Show confirmation modal to finish the writing session and save it.
  */
 const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
-  modal.open({
+  createModal.open({
     title: 'Finish Writing',
     description: 'Are you ready to finish this writing session and save the result?',
     color: 'primary',
@@ -70,16 +68,21 @@ const onFinishWriting = (payload: FormSubmitEvent<z.output<typeof schema>>) => {
         return
       }
 
+      if (!createEntryData.value) {
+        logger.error('No data returned after creating writing entry')
+        return
+      }
+
       state.subject = ''
       state.body = ''
-      logger.info('Writing entry finished and saved', createEntryData.value?.id)
-      await navigateTo('/journal/metrics')
+      logger.info('Writing entry finished and saved', createEntryData.value.id)
+      await navigateTo('/writing/read/' + createEntryData.value.id)
     },
   })
 }
 
 onMounted(async () => {
-  await lastEntryRefetch()
+  await refetch()
 })
 </script>
 
@@ -87,14 +90,12 @@ onMounted(async () => {
   <UPage>
     <UContainer class="pb-16">
       <div class="text-lg my-4">
-        Writing for {{ getBriefDisplayDate(new Date().toISOString()) }}
+        {{ getBriefDisplayDate(new Date().toISOString()) }}
 
-        <USkeleton v-if="lastEntryPending" class="h-4 w-48" />
+        <USkeleton v-if="isPending" class="h-4 w-48" />
 
         <div v-else class="text-sm text-gray-600 dark:text-gray-400 h-4">
-          <template v-if="lastEntryData && lastEntryData.timeAgo">
-            Last entry was {{ lastEntryData.timeAgo }}
-          </template>
+          <template v-if="data && data.timeAgo"> Last entry was {{ data.timeAgo }} </template>
           <template v-else> This is your first writing entry! </template>
         </div>
       </div>

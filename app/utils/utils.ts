@@ -1,8 +1,8 @@
 /**
  * Utility functions for normalizing route paths.
  * @example
- * normalizePath('/journal/') // returns '/journal'
- * normalizePath('/journal')  // returns '/journal'
+ * normalizePath('/fitness/') // returns '/fitness'
+ * normalizePath('/fitness')  // returns '/fitness'
  */
 function normalizePath(path: string) {
   return path.replace(/\/+$/, '')
