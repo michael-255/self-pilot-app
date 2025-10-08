@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
-import { categoriesWithAny, useSearchEntries } from '~/composables/useWriting'
+import { useSearchEntries } from '~/composables/useWriting'
 
 definePageMeta({
   layout: 'writing',
@@ -16,7 +16,8 @@ useSeoMeta({
 
 const { category, calendarDates, query, data, isPending } = useSearchEntries()
 
-const df = new DateFormatter('en-US', { dateStyle: 'medium' })
+const dfCalendar = new DateFormatter('en-US', { dateStyle: 'medium' })
+const dfDisplay = new DateFormatter('en-US', { dateStyle: 'medium', timeStyle: 'short' })
 const today = new Date()
 const minDate = new CalendarDate(2015, 1, 1)
 const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, today.getDate())
@@ -26,7 +27,7 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
   <UPage>
     <UContainer class="pb-16 space-y-4">
       <div class="text-lg my-4">
-        Search Writings
+        Search Entries
 
         <div class="text-sm text-gray-600 dark:text-gray-400 h-4">
           Use the filters and search box below to look through your writing entries.
@@ -54,12 +55,12 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
           >
             <template v-if="calendarDates.start">
               <template v-if="calendarDates.end">
-                {{ df.format(calendarDates.start.toDate(getLocalTimeZone())) }} -
-                {{ df.format(calendarDates.end.toDate(getLocalTimeZone())) }}
+                {{ dfCalendar.format(calendarDates.start.toDate(getLocalTimeZone())) }} -
+                {{ dfCalendar.format(calendarDates.end.toDate(getLocalTimeZone())) }}
               </template>
 
               <template v-else>
-                {{ df.format(calendarDates.start.toDate(getLocalTimeZone())) }}
+                {{ dfCalendar.format(calendarDates.start.toDate(getLocalTimeZone())) }}
               </template>
             </template>
             <template v-else> Pick a date range </template>
@@ -82,21 +83,46 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
       <UInput v-model="query" placeholder="Search..." class="w-full" size="xl" />
 
       <div v-if="!isPending">
-        <div v-if="Array.isArray(data)">
-          <div v-for="entry in data" :key="entry.id" class="mb-4 p-2 border rounded">
-            <div><strong>ID:</strong> {{ entry.id }}</div>
-            <div><strong>Date:</strong> {{ entry.created_at }}</div>
-            <div><strong>TimeAgo:</strong> {{ entry.timeAgo }}</div>
-            <div><strong>Category:</strong> {{ entry.category }}</div>
-            <div><strong>Subject:</strong> {{ entry.subject }}</div>
-            <div><strong>Body:</strong> {{ entry.body }}</div>
-            <div><strong>Chars:</strong> {{ entry.characters }}</div>
-            <div><strong>Words:</strong> {{ entry.words }}</div>
-            <div><strong>ReadingTime:</strong> {{ entry.readingTime }} min</div>
+        <div v-for="entry in data" :key="entry.id" class="mb-6">
+          <div class="relative">
+            <UCard
+              class="w-full cursor-pointer shadow-md"
+              @click="$router.push(`/writing/read/${entry.id}`)"
+            >
+              <template #header>
+                <div>
+                  <div class="text-sm text-primary">{{ entry.category }}</div>
+                  <div class="font-semibold text-lg">{{ entry.subject || 'no subject' }}</div>
+                </div>
+
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  <div>{{ dfDisplay.format(new Date(entry.created_at)) }}</div>
+                  <span class="text-xs">{{ entry.timeAgo }}</span>
+                </div>
+              </template>
+
+              <div
+                class="prose prose-sm dark:prose-invert whitespace-pre-line overflow-hidden text-ellipsis line-clamp-3"
+              >
+                {{ entry.body }}
+              </div>
+
+              <div class="absolute top-3 right-3">
+                <UBadge icon="i-lucide-book-open" color="neutral" variant="soft"> Read </UBadge>
+              </div>
+
+              <template #footer>
+                <div class="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+                  <span><strong>Characters:</strong> {{ entry.characters }}</span>
+                  <span><strong>Words:</strong> {{ entry.words }}</span>
+                  <span><strong>Reading:</strong> {{ entry.readingTime }} min</span>
+                </div>
+              </template>
+            </UCard>
           </div>
         </div>
-        <div v-else>No results found.</div>
       </div>
+      <div v-else>No results found.</div>
     </UContainer>
   </UPage>
 </template>

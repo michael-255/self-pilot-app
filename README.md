@@ -7,10 +7,10 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
+- Cleanup Production migration for new deployment
+
 - `/journal/search` - SEARCH **PRIORITY**
   - `Load more results` button at the bottom
-  - each result should have an option to `Read` (goto read route)
-  - Design a nice card component to show each result
 
 - `/journal/read/:id` - READ
   - Use nice typography

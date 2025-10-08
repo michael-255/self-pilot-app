@@ -147,7 +147,7 @@ onMounted(async () => {
             </div>
 
             <div>
-              <div class="text-sm text-gray-600 dark:text-gray-400">Reading Time</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">Reading</div>
               <div class="text-2xl">{{ writingMetrics.readingTime }} min</div>
             </div>
           </div>

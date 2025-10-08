@@ -239,8 +239,8 @@ const useCreateWritingEntry = () => {
     }) => {
       const { data, error } = await supabase.schema('api_writing').rpc('create_entry', {
         in_category: category,
-        in_subject: subject,
-        in_body: body,
+        in_subject: subject.trim(),
+        in_body: body.trim(),
       })
 
       if (error) {
@@ -304,8 +304,8 @@ const useUpdateWritingEntry = () => {
       const { data, error } = await supabase.schema('api_writing').rpc('update_entry', {
         in_id: id,
         in_category: category,
-        in_subject: subject,
-        in_body: body,
+        in_subject: subject.trim(),
+        in_body: body.trim(),
       })
 
       if (error) {
