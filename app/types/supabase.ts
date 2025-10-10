@@ -71,7 +71,6 @@ export type Database = {
           id: string
           rank: number
           subject: string
-          total_count: number
           updated_at: string
         }[]
       }
