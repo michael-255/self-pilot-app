@@ -82,6 +82,28 @@ const getCompactDisplayDate = (utcDate: string): string => {
 }
 
 /**
+ * Return a full display date for detailed views.
+ * @example
+ * "Friday, October 3rd, 2024, 2:15:30 PM"
+ */
+const getFullDisplayDate = (utcDate: string): string => {
+  if (!utcDate) return 'No Date'
+
+  const dateObj = new Date(utcDate)
+  if (isNaN(dateObj.getTime())) return 'Invalid Date'
+
+  return dateObj.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  })
+}
+
+/**
  * Utility for characters, word count, and estimated reading time for a given text.
  * @example
  * getWritingMetrics("Hello world!") // returns { characters: 12, words: 2, readingTime: 1 }
@@ -106,6 +128,7 @@ const getWritingMetrics = (text: string) => {
 export {
   getBriefDisplayDate,
   getCompactDisplayDate,
+  getFullDisplayDate,
   getInspirationalMessage,
   getOrdinal,
   getWritingMetrics,

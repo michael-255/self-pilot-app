@@ -7,30 +7,7 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- Cleanup Production migration for new deployment
-
-- `/journal/search` - SEARCH **PRIORITY**
-  - `Load more results` button at the bottom
-
-- `/journal/read/:id` - READ
-  - Use nice typography
-  - Show stats (words, time to read)
-  - `Edit` button (goto edit route)
-  - `Delete` button (ask for confirmation + unlock)
-
-- `/journal/edit/:id` - EDIT
-  - On update, goto `read` route with the id (replace?)
-  - `Read` button (goto read route)
-  - `Delete` button (ask for confirmation + unlock)
-
-- `/journal/metrics` - METRICS
-  - Show the last enrty created (can click to read)
-  - Show stats on all writings (total writings done)
-  - Show stats (words, time to read)
-  - Graph of writings over time (day/week/month/year)
-  - Most popular categories
-  - Average words per writing
-  - Average time to read per writing
+- TBD
 
 ## Setup
 
@@ -40,7 +17,7 @@ Make sure to install the dependencies:
 pnpm install
 ```
 
-## Development Server
+### Development Server
 
 Start the development server on `http://localhost:3000`:
 
@@ -48,7 +25,7 @@ Start the development server on `http://localhost:3000`:
 pnpm dev
 ```
 
-## Production
+### Production
 
 Build the application for production:
 
@@ -62,7 +39,7 @@ Locally preview production build:
 pnpm preview
 ```
 
-## Supabase
+### Supabase
 
 To create a new SQL migration file.
 

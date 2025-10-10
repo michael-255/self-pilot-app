@@ -163,7 +163,7 @@ AS $$
       e.search_vector @@ plainto_tsquery('english', in_query)
     )
   ORDER BY rank DESC NULLS LAST, e.created_at DESC
-  LIMIT 20 OFFSET in_offset
+  LIMIT 50 OFFSET in_offset -- Limiting to 50 results for now
 $$;
 
 REVOKE EXECUTE ON FUNCTION api_writing.search_entries(api_writing.category, TIMESTAMPTZ, TIMESTAMPTZ, TEXT, INTEGER) FROM anon;

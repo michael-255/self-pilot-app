@@ -35,7 +35,7 @@ const useSearchEntries = () => {
     end: CalendarDate | undefined
   }>({ start: undefined, end: undefined })
   const query = ref<string | undefined>('')
-  const offset = ref<number | undefined>(0)
+  const offset = ref<number>(0)
 
   // Normalizing params for the RPC call
   const normalizedParams = computed(() => {

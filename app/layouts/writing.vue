@@ -12,11 +12,6 @@ const items = computed(() => [
     to: '/writing/search',
     active: normalizePath(route.path) === normalizePath('/writing/search'),
   },
-  {
-    label: 'Metrics',
-    to: '/writing/metrics',
-    active: normalizePath(route.path) === normalizePath('/writing/metrics'),
-  },
 ])
 </script>
 

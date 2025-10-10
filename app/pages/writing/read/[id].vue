@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { DateFormatter } from '@internationalized/date'
-import { useGetWritingEntry } from '~/composables/useWriting'
+import ConfirmModal from '~/components/shared/ConfirmModal.vue'
+import { useDeleteWritingEntry, useGetWritingEntry } from '~/composables/useWriting'
 
 definePageMeta({
   layout: 'writing',
@@ -14,53 +14,101 @@ useSeoMeta({
   description,
 })
 
+const logger = useLogger()
+const deleteModal = useOverlay().create(ConfirmModal)
 const { routeId } = useRouting()
-const dfDisplay = new DateFormatter('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+const { mutateAsync: deleteEntry, error: deleteError } = useDeleteWritingEntry()
 const { id, data, isPending, refetch } = useGetWritingEntry()
 id.value = routeId
 refetch()
-// TODO: Make a nice custom page for reading entries that doesnt use an ugly card
+
+/**
+ * Show confirmation modal to delete the writing entry.
+ */
+const onDeleteWriting = () => {
+  deleteModal.open({
+    title: 'Delete Writing',
+    description:
+      'Are you sure you want to delete this writing entry? This action cannot be undone.',
+    color: 'error',
+    unlock: true,
+    onConfirm: async () => {
+      await deleteEntry({ id: id.value })
+
+      if (deleteError.value) {
+        logger.error('Error deleting writing entry', deleteError.value)
+        return
+      }
+
+      logger.info('Writing entry deleted', { id: id.value })
+      await navigateTo('/writing/search')
+    },
+  })
+}
 </script>
 
 <template>
   <UPage>
-    <UContainer>
+    <UContainer class="pb-16">
       <div v-if="!isPending && data">
-        <div class="relative">
-          <UCard class="w-full shadow-md mt-9">
-            <template #header>
+        <div class="space-y-6 my-6">
+          <div>
+            <div class="text-sm text-primary mb-2">{{ data.category }}</div>
+            <div>{{ getFullDisplayDate(data.created_at) }}</div>
+            <span class="text-xs text-gray-600 dark:text-gray-400">{{ data.timeAgo }}</span>
+          </div>
+
+          <USeparator />
+
+          <div>
+            <div class="font-semibold text-lg">{{ data.subject || 'no subject' }}</div>
+          </div>
+
+          <div class="prose prose-sm dark:prose-invert whitespace-pre-line">
+            {{ data.body }}
+          </div>
+
+          <UCard variant="soft">
+            <div class="flex justify-between">
               <div>
-                <div class="text-sm text-primary">{{ data.category }}</div>
-                <div class="font-semibold text-lg">{{ data.subject || 'no subject' }}</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Characters</div>
+                <div class="text-2xl">
+                  {{ data.characters }}
+                </div>
               </div>
 
-              <div class="text-sm text-gray-600 dark:text-gray-400">
-                <div>{{ dfDisplay.format(new Date(data.created_at)) }}</div>
-                <div class="text-xs">{{ data.timeAgo }}</div>
+              <div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Words</div>
+                <div class="text-2xl">
+                  {{ data.words }}
+                </div>
               </div>
-            </template>
 
-            <div
-              class="prose prose-sm dark:prose-invert whitespace-pre-line overflow-hidden text-ellipsis line-clamp-3"
-            >
-              {{ data.body }}
+              <div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Reading</div>
+                <div class="text-2xl">{{ data.readingTime }} min</div>
+              </div>
             </div>
-
-            <div class="absolute top-3 right-3">
-              <UBadge icon="i-lucide-book-open" color="neutral" variant="soft"> Read </UBadge>
-            </div>
-
-            <template #footer>
-              <div class="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
-                <span><strong>Characters:</strong> {{ data.characters }}</span>
-                <span><strong>Words:</strong> {{ data.words }}</span>
-                <span><strong>Reading:</strong> {{ data.readingTime }} min</span>
-              </div>
-            </template>
           </UCard>
+
+          <div class="flex justify-end mt-5">
+            <UButton
+              color="warning"
+              size="xl"
+              variant="soft"
+              @click="$router.push(`/writing/edit/${data.id}`)"
+            >
+              Edit
+            </UButton>
+
+            <UButton class="ml-4" size="xl" color="error" variant="soft" @click="onDeleteWriting">
+              Delete
+            </UButton>
+          </div>
         </div>
       </div>
-      <div v-else>No results found.</div>
+
+      <div v-else class="mt-6">Entry not found.</div>
     </UContainer>
   </UPage>
 </template>

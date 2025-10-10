@@ -89,12 +89,12 @@ onMounted(async () => {
 <template>
   <UPage>
     <UContainer class="pb-16">
-      <div class="text-lg my-4">
+      <div class="text-lg my-6">
         {{ getBriefDisplayDate(new Date().toISOString()) }}
 
-        <USkeleton v-if="isPending" class="h-4 w-48" />
+        <USkeleton v-if="isPending" class="w-48" />
 
-        <div v-else class="text-sm text-gray-600 dark:text-gray-400 h-4">
+        <div v-else class="text-sm text-gray-600 dark:text-gray-400">
           <template v-if="data && data.timeAgo"> Last entry was {{ data.timeAgo }} </template>
           <template v-else> This is your first writing entry! </template>
         </div>

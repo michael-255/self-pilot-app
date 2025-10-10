@@ -26,10 +26,10 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
 <template>
   <UPage>
     <UContainer class="pb-16 space-y-4">
-      <div class="text-lg my-4">
+      <div class="text-lg my-6">
         Search Entries
 
-        <div class="text-sm text-gray-600 dark:text-gray-400 h-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400">
           Use the filters and search box below to look through your writing entries.
         </div>
       </div>
@@ -89,39 +89,40 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
               class="w-full cursor-pointer shadow-md"
               @click="$router.push(`/writing/read/${entry.id}`)"
             >
-              <template #header>
+              <div class="space-y-6">
                 <div>
-                  <div class="text-sm text-primary">{{ entry.category }}</div>
-                  <div class="font-semibold text-lg">{{ entry.subject || 'no subject' }}</div>
+                  <div>
+                    <div class="text-sm text-primary">{{ entry.category }}</div>
+                    <div class="font-semibold text-lg">{{ entry.subject || 'no subject' }}</div>
+                  </div>
+
+                  <div class="text-sm text-gray-600 dark:text-gray-400">
+                    <div>{{ dfDisplay.format(new Date(entry.created_at)) }}</div>
+                    <span class="text-xs">{{ entry.timeAgo }}</span>
+                  </div>
                 </div>
 
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                  <div>{{ dfDisplay.format(new Date(entry.created_at)) }}</div>
-                  <span class="text-xs">{{ entry.timeAgo }}</span>
+                <div
+                  class="prose prose-sm dark:prose-invert whitespace-pre-line overflow-hidden text-ellipsis line-clamp-3"
+                >
+                  {{ entry.body }}
                 </div>
-              </template>
 
-              <div
-                class="prose prose-sm dark:prose-invert whitespace-pre-line overflow-hidden text-ellipsis line-clamp-3"
-              >
-                {{ entry.body }}
-              </div>
+                <div class="absolute top-3 right-3">
+                  <UBadge icon="i-lucide-book-open" color="neutral" variant="soft"> Read </UBadge>
+                </div>
 
-              <div class="absolute top-3 right-3">
-                <UBadge icon="i-lucide-book-open" color="neutral" variant="soft"> Read </UBadge>
-              </div>
-
-              <template #footer>
                 <div class="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
                   <span><strong>Characters:</strong> {{ entry.characters }}</span>
                   <span><strong>Words:</strong> {{ entry.words }}</span>
                   <span><strong>Reading:</strong> {{ entry.readingTime }} min</span>
                 </div>
-              </template>
+              </div>
             </UCard>
           </div>
         </div>
       </div>
+
       <div v-else>No results found.</div>
     </UContainer>
   </UPage>
