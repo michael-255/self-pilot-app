@@ -1,7 +1,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  api_journal: {
+  api_writing: {
     Tables: {
       [_ in never]: never
     }
@@ -9,50 +9,50 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_writing_entry: {
+      create_entry: {
         Args: {
           in_body: string
-          in_category: Database['api_journal']['Enums']['writing_category']
+          in_category: Database['api_writing']['Enums']['category']
           in_subject: string
         }
         Returns: {
           body: string
-          category: Database['api_journal']['Enums']['writing_category']
+          category: Database['api_writing']['Enums']['category']
           created_at: string
           id: string
           subject: string
           updated_at: string
         }[]
       }
-      delete_writing_entry: {
+      delete_entry: {
         Args: { in_id: string }
         Returns: undefined
       }
-      get_last_writing_entry: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          body: string
-          category: Database['api_journal']['Enums']['writing_category']
-          created_at: string
-          id: string
-          subject: string
-          updated_at: string
-        }[]
-      }
-      get_writing_entry: {
+      get_entry: {
         Args: { in_id: string }
         Returns: {
           body: string
-          category: Database['api_journal']['Enums']['writing_category']
+          category: Database['api_writing']['Enums']['category']
           created_at: string
           id: string
           subject: string
           updated_at: string
         }[]
       }
-      search_writing_entries: {
+      get_last_entry: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          body: string
+          category: Database['api_writing']['Enums']['category']
+          created_at: string
+          id: string
+          subject: string
+          updated_at: string
+        }[]
+      }
+      search_entries: {
         Args: {
-          in_category?: Database['api_journal']['Enums']['writing_category']
+          in_category?: Database['api_writing']['Enums']['category']
           in_end_date?: string
           in_offset?: number
           in_query?: string
@@ -60,7 +60,7 @@ export type Database = {
         }
         Returns: {
           body: string
-          category: Database['api_journal']['Enums']['writing_category']
+          category: Database['api_writing']['Enums']['category']
           created_at: string
           id: string
           rank: number
@@ -68,16 +68,16 @@ export type Database = {
           updated_at: string
         }[]
       }
-      update_writing_entry: {
+      update_entry: {
         Args: {
           in_body?: string
-          in_category?: Database['api_journal']['Enums']['writing_category']
+          in_category?: Database['api_writing']['Enums']['category']
           in_id: string
           in_subject?: string
         }
         Returns: {
           body: string
-          category: Database['api_journal']['Enums']['writing_category']
+          category: Database['api_writing']['Enums']['category']
           created_at: string
           id: string
           subject: string
@@ -86,7 +86,7 @@ export type Database = {
       }
     }
     Enums: {
-      writing_category:
+      category:
         | 'Journaling'
         | 'Weekly Review'
         | 'Yearly Review'
@@ -234,9 +234,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  api_journal: {
+  api_writing: {
     Enums: {
-      writing_category: [
+      category: [
         'Journaling',
         'Weekly Review',
         'Yearly Review',

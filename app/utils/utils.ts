@@ -1,8 +1,8 @@
 /**
  * Utility functions for normalizing route paths.
  * @example
- * normalizePath('/journal/') // returns '/journal'
- * normalizePath('/journal')  // returns '/journal'
+ * normalizePath('/fitness/') // returns '/fitness'
+ * normalizePath('/fitness')  // returns '/fitness'
  */
 function normalizePath(path: string) {
   return path.replace(/\/+$/, '')
@@ -81,10 +81,56 @@ const getCompactDisplayDate = (utcDate: string): string => {
   return `${year} ${monthName} ${dayNumber}${daySuffix}, ${dayName} ${hours}:${minutesStr} ${ampm}`
 }
 
+/**
+ * Return a full display date for detailed views.
+ * @example
+ * "Friday, October 3rd, 2024, 2:15:30 PM"
+ */
+const getFullDisplayDate = (utcDate: string): string => {
+  if (!utcDate) return 'No Date'
+
+  const dateObj = new Date(utcDate)
+  if (isNaN(dateObj.getTime())) return 'Invalid Date'
+
+  return dateObj.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  })
+}
+
+/**
+ * Utility for characters, word count, and estimated reading time for a given text.
+ * @example
+ * getWritingMetrics("Hello world!") // returns { characters: 12, words: 2, readingTime: 1 }
+ */
+const getWritingMetrics = (text: string) => {
+  let words = 0
+  const characters = text?.length ?? 0
+
+  // Calculate word count
+  if (text) {
+    const segmenter = new Intl.Segmenter('en', { granularity: 'word' })
+    for (const segment of segmenter.segment(text)) {
+      if (segment.isWordLike) words++
+    }
+  }
+
+  // Calculate reading time assuming 200 words per minute
+  const readingTime = Math.max(0, Math.ceil(words / 200))
+  return { characters, words, readingTime }
+}
+
 export {
   getBriefDisplayDate,
   getCompactDisplayDate,
+  getFullDisplayDate,
   getInspirationalMessage,
   getOrdinal,
+  getWritingMetrics,
   normalizePath,
 }

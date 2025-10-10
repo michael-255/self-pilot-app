@@ -8,10 +8,10 @@ const cards = [
     to: '/tools',
   },
   {
-    title: 'Journal',
-    description: 'Capture your thoughts, ideas, and daily reflections in a searchable journal.',
+    title: 'Writing',
+    description: 'Capture your thoughts, ideas, and daily reflections with searchable entries.',
     icon: 'i-lucide-book-open',
-    to: '/journal',
+    to: '/writing',
   },
   {
     title: 'Fitness',

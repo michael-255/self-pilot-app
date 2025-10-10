@@ -43,15 +43,12 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  routeRules: {
-    '/docs': { redirect: '/docs/getting-started', prerender: false },
-  },
-
-  compatibilityDate: '2024-07-11',
+  compatibilityDate: '2025-10-06', // Compatibility date for Nitro presets
 
   nitro: { preset: 'static' },
 
   supabase: {
+    // types: './app/types/supabase.ts', // TODO: troubleshoot at some point
     redirect: false, // Custom middleware will handle auth redirects
     url: process.env.NUXT_PUBLIC_SUPABASE_URL,
     key: process.env.NUXT_PUBLIC_SUPABASE_KEY,

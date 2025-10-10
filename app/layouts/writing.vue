@@ -3,19 +3,14 @@ const route = useRoute()
 
 const items = computed(() => [
   {
-    label: 'Writing',
-    to: '/journal',
-    active: normalizePath(route.path) === normalizePath('/journal'),
+    label: 'Entry',
+    to: '/writing',
+    active: normalizePath(route.path) === normalizePath('/writing'),
   },
   {
     label: 'Search',
-    to: '/journal/search',
-    active: normalizePath(route.path) === normalizePath('/journal/search'),
-  },
-  {
-    label: 'Metrics',
-    to: '/journal/metrics',
-    active: normalizePath(route.path) === normalizePath('/journal/metrics'),
+    to: '/writing/search',
+    active: normalizePath(route.path) === normalizePath('/writing/search'),
   },
 ])
 </script>
@@ -24,7 +19,7 @@ const items = computed(() => [
   <div>
     <UHeader>
       <template #left>
-        <NuxtLink to="/"> <div class="text-2xl font-bold">Journal</div> </NuxtLink>
+        <NuxtLink to="/"> <div class="text-2xl font-bold">Writing</div> </NuxtLink>
       </template>
 
       <UNavigationMenu :items="items" variant="link" />
