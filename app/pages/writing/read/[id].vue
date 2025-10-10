@@ -108,7 +108,7 @@ const onDeleteWriting = () => {
         </div>
       </div>
 
-      <div v-else class="mt-6">Entry not found.</div>
+      <div v-else class="mt-6">No entries found.</div>
     </UContainer>
   </UPage>
 </template>

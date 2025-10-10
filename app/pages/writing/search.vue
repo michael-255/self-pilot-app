@@ -82,7 +82,7 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
 
       <UInput v-model="query" placeholder="Search..." class="w-full" size="xl" />
 
-      <div v-if="!isPending">
+      <div v-if="!isPending && data && data.length > 0">
         <div v-for="entry in data" :key="entry.id" class="mb-6">
           <div class="relative">
             <UCard
@@ -123,7 +123,7 @@ const maxDate = new CalendarDate(today.getFullYear(), today.getMonth() + 1, toda
         </div>
       </div>
 
-      <div v-else>No results found.</div>
+      <div v-else>No entries found.</div>
     </UContainer>
   </UPage>
 </template>

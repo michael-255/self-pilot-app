@@ -48,6 +48,7 @@ export default defineNuxtConfig({
   nitro: { preset: 'static' },
 
   supabase: {
+    // types: './app/types/supabase.ts', // TODO: troubleshoot at some point
     redirect: false, // Custom middleware will handle auth redirects
     url: process.env.NUXT_PUBLIC_SUPABASE_URL,
     key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
