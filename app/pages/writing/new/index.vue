@@ -1,13 +1,9 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import z from 'zod'
-import ConfirmModal from '~/components/shared/ConfirmModal.vue'
+import ConfirmModal from '~/components/ConfirmModal.vue'
 import { categories, useGetLastEntry } from '~/composables/useWriting'
 import { Constants } from '~/types/supabase'
-
-definePageMeta({
-  layout: 'writing',
-})
 
 const title = 'Writing - Entry'
 const description = 'Write about anything and everything.'
