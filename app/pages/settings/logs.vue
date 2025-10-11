@@ -102,19 +102,21 @@ const columns: ColumnDef<AppLog>[] = [
 </script>
 
 <template>
-  <div
-    class="sticky top-0 z-10 bg-[var(--ui-bg)] border-b border-gray-300 dark:border-gray-700 flex items-center justify-between w-full p-3"
-  >
-    <NuxtLink to="/">
-      <div class="text-2xl font-bold">Logs</div>
-    </NuxtLink>
+  <div>
+    <div
+      class="sticky top-0 z-10 bg-[var(--ui-bg)] border-b border-gray-300 dark:border-gray-700 flex items-center justify-between w-full p-3"
+    >
+      <NuxtLink to="/">
+        <div class="text-2xl font-bold">Logs</div>
+      </NuxtLink>
 
-    <UInput v-model="search" placeholder="Search" class="flex-grow max-w-md mx-4" size="lg" />
+      <UInput v-model="search" placeholder="Search" class="flex-grow max-w-md mx-4" size="lg" />
 
-    <UButton variant="ghost" color="neutral" icon="i-lucide-x" to="/settings" />
+      <UButton variant="ghost" color="neutral" icon="i-lucide-x" to="/settings" />
+    </div>
+
+    <UMain>
+      <UTable v-model:global-filter="search" sticky :data :columns />
+    </UMain>
   </div>
-
-  <UMain>
-    <UTable v-model:global-filter="search" sticky :data :columns />
-  </UMain>
 </template>

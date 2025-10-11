@@ -5,14 +5,12 @@ architecture, workflows, and conventions specific to this project.
 
 ## Architecture Overview
 
-- **Monorepo Structure:** Contains multiple Nuxt-based apps (see `self-pilot-app/`,
-  `lifestyle-manager-v1/`).
 - **Nuxt 4 & Nuxt UI:** Main frontend framework. Key files: `nuxt.config.ts`, `app/`, `components/`,
   `layouts/`, `pages/`.
 - **Supabase Integration:** Used for backend/database. See `supabase/` for migrations, config, and
   edge functions.
-- **Feature Domains:** Apps are organized by domain (journal, fitness, budget, measurements) with
-  dedicated folders under `components/`, `layouts/`, and `pages/`.
+- **Feature Domains:** Apps are organized by domain (tools, writing, fitness, budget, measurements)
+  with dedicated folders under `components/`, `layouts/`, and `pages/`.
 
 ## Developer Workflows
 
@@ -37,17 +35,6 @@ architecture, workflows, and conventions specific to this project.
   ```bash
   npx supabase functions new <file_name>
   ```
-
-## Project-Specific Patterns
-
-- **Offline-first journaling:** Journal entries are first stored in Dexie (client-side), then synced
-  to Postgres via Supabase. See `composables/useWriting.ts`.
-- **Component Organization:** Shared UI and domain-specific components are separated (e.g.,
-  `components/shared/`, `components/journal/`).
-- **Routing:** Page routes follow Nuxt conventions, but feature-specific routes (e.g.,
-  `/journal/search`, `/journal/read/:id`) have custom logic for navigation and state.
-- **Metrics & Stats:** Writing and fitness modules include stats and graphs (see
-  `layouts/metrics.vue`, `components/fitness/`).
 
 ## Integration Points
 

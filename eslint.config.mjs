@@ -5,7 +5,6 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 export default withNuxt([eslintPluginPrettierRecommended], {
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
-    'vue/no-multiple-template-root': 'off',
     'vue/component-name-in-template-casing': [
       'error',
       'PascalCase',
