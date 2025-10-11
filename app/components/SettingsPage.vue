@@ -4,7 +4,7 @@ import ConfirmModal from '~/components/ConfirmModal.vue'
 import { localDatabase } from '~/utils/local-database'
 
 const title = 'Settings'
-const description = 'Manage your application settings and logs.'
+const description = 'Manage your settings and application logs'
 
 useSeoMeta({
   title,
@@ -121,6 +121,7 @@ const onTestLogger = () => {
           <div class="space-x-2">
             <UBadge :label="`All: ${logCounts.all}`" variant="outline" color="neutral" />
             <UBadge
+              v-if="isDevMode"
               :label="`Debug: ${logCounts.debug}`"
               variant="outline"
               color="neutral"
@@ -176,6 +177,8 @@ const onTestLogger = () => {
             />
           </div>
         </div>
+
+        <slot />
       </UPageList>
     </UContainer>
   </UPage>

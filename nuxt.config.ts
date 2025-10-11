@@ -13,6 +13,22 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
   ],
 
+  // Only include Vue files for page routes, excluding components subdirectory
+  pages: {
+    pattern: ['**/*.vue', '!**/components/**'],
+  },
+
+  // Auto-import components from both components/ and pages/**/components/
+  components: [
+    '~/components',
+    {
+      path: '~/pages',
+      pattern: '**/components/**',
+      pathPrefix: false,
+    },
+  ],
+
+  // Setup manifest and service worker for PWA
   pwa: {
     base: pagesUrl,
     manifest: {

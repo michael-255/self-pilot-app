@@ -2,10 +2,6 @@
 import { CalendarDate, DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import { useSearchEntries } from '~/composables/useWriting'
 
-definePageMeta({
-  layout: 'writing',
-})
-
 const title = 'Writing - Search'
 const description = 'Search through your writing entries.'
 

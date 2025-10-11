@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import ConfirmModal from '~/components/shared/ConfirmModal.vue'
+import ConfirmModal from '~/components/ConfirmModal.vue'
 import { useDeleteWritingEntry, useGetWritingEntry } from '~/composables/useWriting'
-
-definePageMeta({
-  layout: 'writing',
-})
 
 const title = 'Writing - Read'
 const description = 'Looking back at a writing entry.'

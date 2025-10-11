@@ -9,10 +9,5 @@ useSeoMeta({
 </script>
 
 <template>
-  <UPageHero :title="title" :description="description">
-    <template #top>
-      <HomeHeroBackground />
-      <LazyHomeStarsBg />
-    </template>
-  </UPageHero>
+  <UPageHero :title="title" :description="description" />
 </template>

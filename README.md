@@ -7,7 +7,11 @@ A collection of tools and mini-apps for day-to-day life.
 
 ## Next Steps
 
-- TBD
+Build some of the tools:
+
+- Loan Calculator
+- Tip Calculator
+- Check Helper (convert numbers to words)
 
 ## Setup
 

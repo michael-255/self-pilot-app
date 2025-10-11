@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import z from 'zod'
-import ConfirmModal from '~/components/shared/ConfirmModal.vue'
+import ConfirmModal from '~/components/ConfirmModal.vue'
 import { Constants } from '~/types/supabase'
-
-definePageMeta({
-  layout: 'writing',
-})
 
 const title = 'Writing - Edit'
 const description = 'Editing a previous writing entry.'
