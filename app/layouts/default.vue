@@ -15,9 +15,19 @@ const items = computed(() => [
     active: route.path.startsWith('/tools'),
     children: [
       {
-        label: 'Tools (WIP)',
-        to: '/tools',
-        active: route.path.startsWith('/tools'),
+        label: 'Check Helper',
+        to: '/tools/checks',
+        active: route.path.startsWith('/tools/checks'),
+      },
+      {
+        label: 'Loan Calculator',
+        to: '/tools/loans',
+        active: route.path.startsWith('/tools/loans'),
+      },
+      {
+        label: 'Tip Calculator',
+        to: '/tools/tips',
+        active: route.path.startsWith('/tools/tips'),
       },
     ],
   },

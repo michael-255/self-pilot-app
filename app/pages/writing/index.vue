@@ -1,5 +1,5 @@
 <script setup lang="ts">
 definePageMeta({
-  redirect: '/tools/checks',
+  redirect: '/writing/new',
 })
 </script>
