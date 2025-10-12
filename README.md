@@ -10,7 +10,6 @@ A collection of tools and mini-apps for day-to-day life.
 Build some of the tools:
 
 - Loan Calculator
-- Tip Calculator
 - Check Helper (convert numbers to words)
 
 Update copilot-instructions to be tailored for the project and more useful.
