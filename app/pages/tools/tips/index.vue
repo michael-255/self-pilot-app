@@ -2,6 +2,14 @@
 import { computed, ref } from 'vue'
 import z from 'zod'
 
+const title = 'Tools - Tip Calculator'
+const description = 'Calculate tips and split bills easily.'
+
+useSeoMeta({
+  title,
+  description,
+})
+
 const bill = ref<number | string>(1)
 const tip = ref<number | string>(20)
 const people = ref<number | string>(1)
